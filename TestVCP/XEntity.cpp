@@ -45,7 +45,33 @@ bool XEntityManager::IsLineBeBlocked(float xa, float ya,float za, float xb, floa
 					x2 = i->centerpoint.x + (i->collisioninfo[1]) / 2.0,
 					y2 = i->centerpoint.y + (i->collisioninfo[0]) / 2.0,
 					z2 = i->centerpoint.z + (i->collisioninfo[2]) / 2.0;
+				float xsmall = -1.0f, xbig = -1.0f, ysmall = -1.0f, ybig = -1.0f, zsmall = -1.0f, zbig = -1.0f;
+				if (xa < xb) {
+					xsmall = xa;
+					xbig = xb;
+				}
+				else {
+					xsmall = xb;
+					xbig = xa;
+				}
+				if (ya < yb) {
+					ysmall = ya;
+					ybig = yb;
+				}
+				else {
+					ysmall = yb;
+					ybig = ya;
+				}
+				if (za < zb) {
+					zsmall = za;
+					zbig = zb;
+				}
+				else {
+					zsmall = zb;
+					zbig = za;
+				}
 				//optimization1
+				/*
 				if (
 					OPT1(xa<x1, xb<x1) ||
 					OPT1(xa>x2, xb>x2) ||
@@ -64,8 +90,16 @@ bool XEntityManager::IsLineBeBlocked(float xa, float ya,float za, float xb, floa
 					cout << "\n***" << i->name;
 					return true;
 				}
-				else {
+				*/
+				//else {
 					//parameter equation calculate intersection
+				if (OPT1(x1 <= xbig,x2 >= xsmall)&&
+					OPT1(y1 <= ybig, y2 >= ysmall)&&
+					OPT1(z1 <= zbig, z2 >= zsmall)
+					) {
+					return true;
+				}
+				/*
 					float m = xb - xa,
 						n = yb - ya,
 						t = zb - za;
@@ -80,8 +114,9 @@ bool XEntityManager::IsLineBeBlocked(float xa, float ya,float za, float xb, floa
 							return true;
 						}
 					}
+					*/
 					//???
-				}
+				//}//Çó´æÔÚµÄelse
 			}//if for box
 		}//if for i not nullptr
 	}//for loop
