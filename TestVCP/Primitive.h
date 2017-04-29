@@ -61,6 +61,7 @@ public:
 	KVec3 GetRotToCenterPoint(KVec3 vpos);
 	float JudgeComplete(int vcandidateindex);
 	float JudgeSmoothness(int vcandidateindex);
+	float JudgeFitness(int vcandidateindex);
 };
 #endif
 

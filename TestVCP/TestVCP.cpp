@@ -15,12 +15,10 @@ int main()
 	p2.mainobjvec.push_back("Ground");
 	p2.shottime = 5.0f;
 	p2.Init();
-	//p2.ToPrimitive1();
-	//cout << "\n***" << p2.prim1vec.size();
-	//p2.ToJson();
+	p2.ToPrimitive1();
+	p2.ToJson();
 	//p2.Print();
-	//p2.ToPrimitive0();
-	//p2.ToFile("D:/TestVCPJson.txt");
+	p2.ToFile("D:/TestVCPJson.txt");
 	/*
 	Primitive1 p1;
 	p1.frameids = 1;

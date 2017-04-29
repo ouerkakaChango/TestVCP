@@ -6,6 +6,7 @@
 #include "XError.h"
 #include "XDataBox.h"
 #include "XMath.h"
+#include "FFLLAPI.h"	
 
 void Primitive0::Print() {
 	cout << "\nframeid:" << frameid <<"\npos:";
@@ -101,7 +102,7 @@ void Primitive2::Init() {
 				//离散和分段数据
 				//???
 				float deltafai = 3.0f, deltatheta = 2.0f, deltarou = 20.0f;
-				segsize = 360/6;//12段
+				segsize = 360/6;//6段
 				int candidatesize = 5;
 
 				//初始化
@@ -121,26 +122,41 @@ void Primitive2::Init() {
 							//根据theta分段放入各个"区域"
 							int t1 = static_cast<int>(theta);
 							int index = (t1 - t1 % segsize) / segsize;
-							dotcloudvec[index].push_back(SCToCCoordinate(fai, theta, rou));
+							dotcloudvec[index].push_back(SCToCCoordinate(fai, theta, rou)+pobj->centerpoint);
 						}
 					}
 				}//fai的for循环
 				//cout <<"\n"<<dotcloudvec[0].capacity();
 
+				float tmaxgoodness = 0.0f;
+				int tbesti = 0;
 				for (int cani = 0; cani < candidatesize; cani++) {
-					//从每个区域随机出一个点然后首尾相连，生成路径
+					//从每个区域随机出一个点然后相连，生成路径
 					for (int i = 0; i < dotcloudvec.size(); i++) {
 						candidatepathvec[cani].push_back(GetRandomPointAtSeg(i));
 					}
-					candidatepathvec[cani].push_back(candidatepathvec[cani][0]);
+					//candidatepathvec[cani].push_back(candidatepathvec[cani][0]);
 					//评价路径，此时模糊逻辑和（平滑性，适中性,完整率）上场
-					//???
 					float tjcomplete = JudgeComplete(cani);
-					cout << "\n&&&JUDGECOMPLETE:" << tjcomplete;
+					cout << "\nCOMPLETE:" << tjcomplete;
 					float tjsmoothness = JudgeSmoothness(cani);
-					cout << "\n$$$JUDGESMOOTHNESS:" << tjsmoothness;
-				}//随机次数for
-
+					cout << "\nSMOOTHNESS:" << tjsmoothness;
+					float tjfitness = JudgeFitness(cani);
+					cout << "\nFITNESS:" << tjfitness;
+					//???
+					//取权值计算最优值
+					//(complete:0.6,smoothness:0.3,fitness:0.1)
+					float tgoodness = 0.6f*tjcomplete + 0.3f*(NearlyEqualf(tjsmoothness, 0.0f) ? 1.0f : atan(1 / tjsmoothness)) + 0.1f*tjfitness / (16.0*candidatepathvec[0].size());
+					cout << "\n!!!Final goodness:" << tgoodness;
+					if (tgoodness > tmaxgoodness) {
+						tbesti = cani;
+						tmaxgoodness = tgoodness;
+					}
+					//cout << "\n111:" << 0.6*tjcomplete;
+					//cout << "\n222:" << 0.3*(NearlyEqualf(tjsmoothness, 0.0f) ? 1.0f : atan(1 / tjsmoothness));
+					//cout << "\n333:" << ;
+				}
+				pathvec = candidatepathvec[tbesti];
 				//PrintPath();
 				//cout << "\n@@@" << prim0vec.size();
 
@@ -174,6 +190,62 @@ float Primitive2::JudgeSmoothness(int vcandidateindex) {
 		anglevec.push_back(t1.GetAngleBetween(t2));
 	}
 	return GetStandardDeviation(anglevec);
+}
+
+#define DIS	0 // our health is 1st variable
+#define ANG	1 // enemy health is 2nd variable
+
+//??? 0 4 16
+float Primitive2::JudgeFitness(int vcandidateindex) {
+	float re = 0.0f;
+	if (shotmethod == "Surround") {
+		for (auto& i : candidatepathvec[vcandidateindex]) {
+			KVec3 tcc = i - centerpoint;
+			float trou = tcc.GetLength() / (XENTITYMGR.Get(mainobjvec[0])->size)*100.0f;
+			float tfai = 90.0f - ArcToDegree(acos(tcc.z / tcc.GetLength()));
+			//cout << "\nOriginal Dis:" << trou << " Ang:" << tfai;
+			int model = ffll_new_model();//
+
+			int ret_val = (int)ffll_load_fcl_file(model, "fltest1.fcl");//
+
+			if (ret_val < 0)
+			{
+				// make sure the "working directory" in "Project | Settings..."
+				// is set to the executable's directory if running from the MSVC IDE
+				throw XError("Error Opening aiwisdom.fcl");
+			}
+			int child = ffll_new_child(model);//
+			ffll_set_value(model, child, DIS, trou); //
+			ffll_set_value(model, child, ANG, tfai); //
+
+			int output = (int)ffll_get_output_value(model, child); //
+			//cout << "\n!!!:" << ffll_get_output_value(model, child);
+			switch (output)
+			{
+			case (1):
+				//cout << "\nNot good";
+				break;
+
+			case (2):
+				//cout << "\nSosoGood";
+				re += 4.0f;
+				break;
+
+			case (3):
+				//cout << "\nVeryGood";
+				re += 16.0f;
+				break;
+			default:
+				throw XError("\nFuzzyReturnError");
+				break;
+			} // end switch
+
+		}
+	}
+	else {
+		throw XError("\nShotMethodError At JudgeFitness(),SHOTMETHOD:" + shotmethod);
+	}
+	return re;
 }
 
 KVec3 Primitive2::GetRandomPointAtSeg(int vindex) {

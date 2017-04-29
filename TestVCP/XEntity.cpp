@@ -39,12 +39,12 @@ bool XEntityManager::IsLineBeBlocked(float xa, float ya,float za, float xb, floa
 	for (auto& i : entityvec) {
 		if (i != nullptr) {
 			if ((i->collisiontype == "Low_Box" || i->collisiontype == "High_Box")&&i->name!=vname) {
-				float x1 = i->centerpoint.x - (i->collisioninfo[1]) / 2.0,
-					y1 = i->centerpoint.y - (i->collisioninfo[0]) / 2.0,
-					z1 = i->centerpoint.z - (i->collisioninfo[2]) / 2.0,
-					x2 = i->centerpoint.x + (i->collisioninfo[1]) / 2.0,
-					y2 = i->centerpoint.y + (i->collisioninfo[0]) / 2.0,
-					z2 = i->centerpoint.z + (i->collisioninfo[2]) / 2.0;
+				float x1 = i->centerpoint.x - (i->collisioninfo[1]) / 2.0f,
+					y1 = i->centerpoint.y - (i->collisioninfo[0]) / 2.0f,
+					z1 = i->centerpoint.z - (i->collisioninfo[2]) / 2.0f,
+					x2 = i->centerpoint.x + (i->collisioninfo[1]) / 2.0f,
+					y2 = i->centerpoint.y + (i->collisioninfo[0]) / 2.0f,
+					z2 = i->centerpoint.z + (i->collisioninfo[2]) / 2.0f;
 				float xsmall = -1.0f, xbig = -1.0f, ysmall = -1.0f, ybig = -1.0f, zsmall = -1.0f, zbig = -1.0f;
 				if (xa < xb) {
 					xsmall = xa;
