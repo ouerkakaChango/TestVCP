@@ -5,8 +5,10 @@ using namespace std;
 
 int main()
 {
-	XEntity e_ground("Ground", "StaticMesh", KVec3(0, 0, 20), "Low_Box", MakeVec(1000, 1000, 50));
-	XEntity e_cha1("Cha1", "Character", KVec3(200, 200, 20), "Capsule", MakeVec(30, 40));
+	XEntity e_ground("Ground", "StaticMesh", KVec3(0, 0, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
+	XEntity e_cha1("Cha1", "Character", KVec3(200, 200, 20), "Capsule", MakeVec(30.0f, 40.0f));
+	XEntity e_box1("BlockBox1", "StaticMesh", KVec3(0, -1250, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
+	XEntity e_box2("BlockBox2", "StaticMesh", KVec3(0, 1000, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
 	Primitive2 p2;
 	p2.shotid = 1;
 	p2.distanceLOD = "Far";

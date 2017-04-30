@@ -93,8 +93,8 @@ void Primitive2::Init() {
 				dise = tdis[1];
 				angles = tangle[0];
 				anglee = tangle[1];
-				diss = 3000;
-				dise = 3100;
+				//diss = 3000;
+				//dise = 3100;
 				//angles = 30;
 				//anglee = 48;
 				//现在已有可行解范围了，生成点云
@@ -102,8 +102,8 @@ void Primitive2::Init() {
 				//离散和分段数据
 				//???
 				float deltafai = 3.0f, deltatheta = 2.0f, deltarou = 20.0f;
-				segsize = 360/6;//6段
-				int candidatesize = 5;
+				segsize = 360/12;//6段
+				int candidatesize = 20; //20次随机
 
 				//初始化
 				for (int i = 0; i < 360/segsize; i++) {
@@ -116,13 +116,18 @@ void Primitive2::Init() {
 				for (float fai = 90.0f - anglee; fai <= 90.0f - angles; fai += deltafai) {
 					for (float theta = 0.0f; theta < 360.0f; theta += deltatheta) {
 						for (float rou = diss; rou <= dise; rou += deltafai) {
-							//???碰撞检测去除点
-							//点云
-							//dotcloudvec.push_back(SCToCCoordinate(fai, theta, rou));
-							//根据theta分段放入各个"区域"
-							int t1 = static_cast<int>(theta);
-							int index = (t1 - t1 % segsize) / segsize;
-							dotcloudvec[index].push_back(SCToCCoordinate(fai, theta, rou)+pobj->centerpoint);
+							//碰撞检测去除点
+							//???非常耗时，能否优化
+							KVec3 tpoint = SCToCCoordinate(fai, theta, rou) + pobj->centerpoint;
+							if (!XENTITYMGR.IsPointInBlock(tpoint)) {
+								//点云
+								//dotcloudvec.push_back(SCToCCoordinate(fai, theta, rou));
+								//根据theta分段放入各个"区域"
+								int t1 = static_cast<int>(theta);
+								int index = (t1 - t1 % segsize) / segsize;
+								dotcloudvec[index].push_back(tpoint);
+							}
+							else{}
 						}
 					}
 				}//fai的for循环
@@ -146,7 +151,7 @@ void Primitive2::Init() {
 					//???
 					//取权值计算最优值
 					//(complete:0.6,smoothness:0.3,fitness:0.1)
-					float tgoodness = 0.6f*tjcomplete + 0.3f*(NearlyEqualf(tjsmoothness, 0.0f) ? 1.0f : atan(1 / tjsmoothness)) + 0.1f*tjfitness / (16.0*candidatepathvec[0].size());
+					float tgoodness = 0.6f*tjcomplete + 0.3f*(NearlyEqualf(tjsmoothness, 0.0f) ? 1.0f : atanf(1 / tjsmoothness)) + 0.1f*tjfitness / (16.0f*candidatepathvec[0].size());
 					cout << "\n!!!Final goodness:" << tgoodness;
 					if (tgoodness > tmaxgoodness) {
 						tbesti = cani;

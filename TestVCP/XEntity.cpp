@@ -73,18 +73,7 @@ bool XEntityManager::IsLineBeBlocked(float xa, float ya,float za, float xb, floa
 				//optimization1
 				/*
 				if (
-					OPT1(xa<x1, xb<x1) ||
-					OPT1(xa>x2, xb>x2) ||
-					OPT1(ya<y1, yb<y1) ||
-					OPT1(ya>y2, yb>y2) ||
-					OPT1(ya<y1, yb<y1) ||
-					OPT1(ya>y2, yb>y2) ||
-					OPT1(za<z1, zb<z1) ||
-					OPT1(za>z2, zb>z2) ||
-					OPT1(xa<x1, xb<x1) ||
-					OPT1(xa>y2, xb>y2) ||
-					OPT1(za<z1, zb<z1) ||
-					OPT1(za>z2, zb>z2)
+					//opt1
 					)
 				{
 					cout << "\n***" << i->name;
@@ -99,26 +88,26 @@ bool XEntityManager::IsLineBeBlocked(float xa, float ya,float za, float xb, floa
 					) {
 					return true;
 				}
-				/*
-					float m = xb - xa,
-						n = yb - ya,
-						t = zb - za;
-					float tx=xa, ty=ya, tz=za;
-					for (float tdelta = 0.0f; xa + tdelta <= xb; tdelta += 0.1f) {
-						tx += m*tdelta;
-						ty += n*tdelta;
-						tz += t*tdelta;
-						//check if the point in box
-						if (tx >= x1&&tx <= x2&&ty >= y1&&ty <= y2&&tz >= z1&&tz <= z2) {
-							//cout << "\n***" << i->name<<" "<<vname;
-							return true;
-						}
-					}
-					*/
-					//???
 				//}//Çó´æÔÚµÄelse
 			}//if for box
 		}//if for i not nullptr
 	}//for loop
 	return re;
+}
+
+bool XEntityManager::IsPointInBlock(KVec3 vp) {
+	for (auto& i : entityvec) {
+		if (i->collisiontype == "High_Box" || i->collisiontype == "Low_Box") {
+			float x1 = i->centerpoint.x - (i->collisioninfo[1]) / 2.0f,
+				y1 = i->centerpoint.y - (i->collisioninfo[0]) / 2.0f,
+				z1 = i->centerpoint.z - (i->collisioninfo[2]) / 2.0f,
+				x2 = i->centerpoint.x + (i->collisioninfo[1]) / 2.0f,
+				y2 = i->centerpoint.y + (i->collisioninfo[0]) / 2.0f,
+				z2 = i->centerpoint.z + (i->collisioninfo[2]) / 2.0f;
+			if (vp.x >= x1&&vp.x <= x2&&vp.y >= y1&&vp.y <= y2&&vp.z >= z1&&vp.z <= z2) {
+				return true;
+			}
+		}
+	}
+	return false;
 }

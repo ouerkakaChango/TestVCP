@@ -17,6 +17,7 @@ public:
 	static XEntityManager& GetInstance();
 	XEntity* Get(string vname);
 	bool IsLineBeBlocked(float xa, float ya, float za,float xb, float yb,float zb,string vname);
+	bool IsPointInBlock(KVec3 vp);
 };
 #define XENTITYMGR XEntityManager::GetInstance()
 #endif
