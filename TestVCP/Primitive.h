@@ -29,18 +29,22 @@ public:
 	void ToJson(bool removeHeadTail=false);
 	void ToFile(string filepath);
 };
+class XEntity;
 class Primitive2 {
 private:
 	KVec3 centerpoint=KVec3(-999,-999,-999);
+	void _InitDis(XEntity* vcenterentity);
+	void _InitRot();
 public:
 	Primitive2() {}
 	int shotid;
 	string distanceLOD, angleLOD, shotmethod;
 	vector<string> mainobjvec;
 	vector<string> compositionvec;
+	vector<string> techvec;
 	float shottime;
 
-	float diss, dise, angles, anglee;
+	float diss, dise, myfais, myfaie,mythetas,mythetae;
 	int segsize = -1;
 	vector<vector<KVec3>> dotcloudvec;
 	vector<vector<KVec3>> candidatepathvec;

@@ -8,6 +8,7 @@ public:
 	KVec3 centerpoint;
 	float size;//to calculate
 	vector<float> collisioninfo;
+	vector<KVec3> extroinfovec;
 	XEntity(string vname, string vtype, KVec3 vcenterpoint, string vcollisiontype, vector<float> vcollisioninfo);
 };
 

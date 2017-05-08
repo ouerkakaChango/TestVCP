@@ -79,6 +79,41 @@ void Primitive1::ToFile(string filepath) {
 	cout << "File write ok.\n";
 }
 
+void Primitive2::_InitDis(XEntity* vcenterentity) {
+	if (distanceLOD == "Far") {
+		auto tdis = XDATABOX.GetFar_dis(vcenterentity->collisiontype, vcenterentity->size);
+		diss = tdis[0];
+		dise = tdis[1];
+	}
+	else if (distanceLOD == "SmallFull") {
+		auto tdis = XDATABOX.GetSmallFull_dis(vcenterentity->collisiontype, vcenterentity->size);
+		diss = tdis[0];
+		dise = tdis[1];
+	}
+	else {
+		throw XError("ERROR:distanceLOD error at Init,is:" + distanceLOD);
+	}
+}
+
+void Primitive2::_InitRot() {
+	if (angleLOD == "Depression") {
+		auto tmyfai = XDATABOX.GetDepression_angle(shotmethod);
+		myfais = tmyfai[0];
+		myfaie = tmyfai[1];
+	}
+	else if (angleLOD == "Level") {
+		auto tmyfai = XDATABOX.GetLevel_myfai(shotmethod);
+		myfais = tmyfai[0];
+		myfaie = tmyfai[1];
+		auto ttheta = XDATABOX.GetLevel_mytheta(shotmethod);
+		mythetas = ttheta[0];
+		mythetae = ttheta[1];
+	}
+	else {
+		throw XError("ERROR:angleLOD error at Init,is:" + angleLOD);
+	}
+}
+
 void Primitive2::Init() {
 	if (mainobjvec.size() == 1) {
 		auto pobj = XENTITYMGR.Get(mainobjvec[0]);
@@ -87,23 +122,20 @@ void Primitive2::Init() {
 			centerpoint = pobj->centerpoint;
 			if (shotmethod == "Surround") {
 				//确定diss等4个变量
-				auto tdis = XDATABOX.GetFar_dis(pobj->collisiontype, pobj->size);
-				auto tangle = XDATABOX.GetDepression_angle(shotmethod);
-				diss = tdis[0];
-				dise = tdis[1];
-				angles = tangle[0];
-				anglee = tangle[1];
+				_InitDis(pobj);
+				_InitRot();
 				//diss = 3000;
 				//dise = 3100;
 				//angles = 30;
 				//anglee = 48;
 				//现在已有可行解范围了，生成点云
-				cout << "\n4v: " << diss << " " << dise << " " << angles << " " << anglee;
+				cout << "\n4v: " << diss << " " << dise << " " << myfais << " " << myfaie;
 				//离散和分段数据
 				//???
-				float deltafai = 3.0f, deltatheta = 2.0f, deltarou = 20.0f;
+				float deltafai = 3.0f, deltatheta = 20.0f, deltarou = 20.0f;
+				                           //2
 				segsize = 360/12;//6段
-				int candidatesize = 20; //20次随机
+				int candidatesize = 5; //20次随机
 
 				//初始化
 				for (int i = 0; i < 360/segsize; i++) {
@@ -113,7 +145,7 @@ void Primitive2::Init() {
 					candidatepathvec.push_back(vector<KVec3>());
 				}
 				//球面fai(90-anglee,90-angles),theta(0,2*pi),rou(diss,dise)
-				for (float fai = 90.0f - anglee; fai <= 90.0f - angles; fai += deltafai) {
+				for (float fai = 90.0f - myfaie; fai <= 90.0f - myfais; fai += deltafai) {
 					for (float theta = 0.0f; theta < 360.0f; theta += deltatheta) {
 						for (float rou = diss; rou <= dise; rou += deltafai) {
 							//碰撞检测去除点
@@ -166,6 +198,15 @@ void Primitive2::Init() {
 				//cout << "\n@@@" << prim0vec.size();
 
 			}//###"surround"的if
+			else if (shotmethod == "Cut") {
+				//确定diss等6个变量
+				_InitDis(pobj);
+				_InitRot();
+				//由于是1个人/物体，所以不用考虑兴趣线（或者只取人物正面）
+				//由6个参数生成点云，去掉碰撞点
+				//???
+				cout << "\ngg";
+			}
 
 		}//物体非空
 		else {
