@@ -37,7 +37,7 @@ vector<float> XDataBox::GetSmallFull_dis(string vcollisiontype, float vsize) {
 
 vector<float> XDataBox::GetLevel_myfai(string vshotmethod) {
 	if (vshotmethod == "Cut") {
-		return MakeVec(level_myfai[0], level_myfai[1]);
+		return MakeVec(level_myfai[0], level_myfai[2]);
 	}
 	else {
 		throw XError("!!!Error:ShotMethodError At GetLevel_myfai,ShotMethod:" + vshotmethod);
@@ -47,11 +47,31 @@ vector<float> XDataBox::GetLevel_myfai(string vshotmethod) {
 
 vector<float> XDataBox::GetLevel_mytheta(string vshotmethod) {
 	if (vshotmethod == "Cut") {
-		return MakeVec(level_mytheta[0], level_mytheta[1]);
+		return MakeVec(level_mytheta[0], level_mytheta[2]);
 	}
 	else {
 		throw XError("!!!Error:ShotMethodError At GetLevel_mytheta,ShotMethod:" + vshotmethod);
 		return vector<float>();
+	}
+}
+
+float XDataBox::GetLevel_perfectmyfai(string vshotmethod) {
+	if (vshotmethod == "Cut") {
+		return level_myfai[1];
+	}
+	else {
+		throw XError("!!!Error:ShotMethodError At GetLevel_perfectmyfai,ShotMethod:" + vshotmethod);
+		return -1.0f;
+	}
+}
+
+float XDataBox::GetLevel_perfectmytheta(string vshotmethod) {
+	if (vshotmethod == "Cut") {
+		return level_mytheta[1];
+	}
+	else {
+		throw XError("!!!Error:ShotMethodError At GetLevel_perfectmytheta,ShotMethod:" + vshotmethod);
+		return -1.0f;
 	}
 }
 

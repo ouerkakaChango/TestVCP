@@ -89,6 +89,7 @@ void Primitive2::_InitDis(XEntity* vcenterentity) {
 		auto tdis = XDATABOX.GetSmallFull_dis(vcenterentity->collisiontype, vcenterentity->size);
 		diss = tdis[0];
 		dise = tdis[1];
+		perfectrou = vcenterentity->size*XDATABOX.smallfull_dis_capsule_rate[1];
 	}
 	else {
 		throw XError("ERROR:distanceLOD error at Init,is:" + distanceLOD);
@@ -105,12 +106,33 @@ void Primitive2::_InitRot() {
 		auto tmyfai = XDATABOX.GetLevel_myfai(shotmethod);
 		myfais = tmyfai[0];
 		myfaie = tmyfai[1];
+		//perfectfai = 90.0f-XDATABOX.GetLevel_perfectmyfai(shotmethod);
+
 		auto ttheta = XDATABOX.GetLevel_mytheta(shotmethod);
 		mythetas = ttheta[0];
 		mythetae = ttheta[1];
+		//perfecttheta= XDATABOX.GetLevel_perfectmytheta(shotmethod);
 	}
 	else {
 		throw XError("ERROR:angleLOD error at Init,is:" + angleLOD);
+	}
+}
+
+bool Primitive2::_IsExistAndSetPerfect1(XEntity* vobj) {
+	//???
+	//中心点+距离*正面方向向量
+	KVec3 tperfectpoint = centerpoint +(vobj->extroinfovec[0])*perfectrou;
+
+	if (!XENTITYMGR.IsPointInBlock(tperfectpoint)&&!XENTITYMGR.IsLineBeBlocked(tperfectpoint.x,tperfectpoint.y,tperfectpoint.z,centerpoint.x,centerpoint.y,centerpoint.z,vobj->name)) {
+		shotpos = tperfectpoint;
+		shotrot = GetRotToCenterPoint(tperfectpoint);
+		cout << "\nPerfectPos:"; shotpos.Print();
+		cout << "\nPerfectRot:"; shotrot.Print();
+		return true;
+	}
+	else {
+		cout << "\nPerfect false";
+		return false;
 	}
 }
 
@@ -202,10 +224,80 @@ void Primitive2::Init() {
 				//确定diss等6个变量
 				_InitDis(pobj);
 				_InitRot();
-				//由于是1个人/物体，所以不用考虑兴趣线（或者只取人物正面）
-				//由6个参数生成点云，去掉碰撞点
-				//???
-				cout << "\ngg";
+				//由于是1个人/物体，所以不用考虑兴趣线（只取人物正面）
+				//首先寻找最优角度距离的点
+				//如果存在并可见，则赋值shotpos,shotrot,
+				if (_IsExistAndSetPerfect1(pobj)) {
+
+				}
+				else {
+					//如果不存在，则生成点云，多次随机并取（可见性，适中性）的最优点
+					//由6个参数生成点云，去掉碰撞点
+					KVec3 tsccenter = CCToSCoordinate(centerpoint);
+					float tcentertheta = tsccenter.y;
+					float deltafai = 2.0f, deltatheta = 2.0f, deltarou = 10.0f;
+					bool istwosides = false;
+					dotcloudvec.push_back(vector<KVec3>());//dotcloud[0]
+					if (tcentertheta<mythetae || tcentertheta>360.0f - mythetae) {
+						istwosides = true;
+					}
+					if (!istwosides) {
+						for (float fai = 90.0f - myfaie; fai <= 90.0f - myfais; fai += deltafai) {
+							for (float theta = tcentertheta + mythetas; theta <= tcentertheta + mythetae; theta += deltatheta) {
+								for (float rou = diss; rou <= dise; rou += deltarou) {
+									KVec3 tpoint = SCToCCoordinate(fai, theta, rou) + pobj->centerpoint;
+									if (!XENTITYMGR.IsPointInBlock(tpoint)) {
+										//点云
+										dotcloudvec[0].push_back(tpoint);
+									}
+								}
+							}
+						}
+					}
+					else {
+						//分两批
+						float thetas1 = -1.0f, thetae1 = 360.0f, thetas2 = 0.0f, thetae2 = -1.0f;
+						if (tcentertheta > 270.0f) {
+							thetas1 = tcentertheta + mythetas;
+							thetae2 = tcentertheta + mythetae - 360.0f;
+						}
+						else {
+							thetas1 = tcentertheta + 360.0f + mythetas;
+							thetae2 = tcentertheta + mythetae;
+						}
+						for (float fai = 90.0f - myfaie; fai <= 90.0f - myfais; fai += deltafai) {
+							for (float theta = thetas1; theta <= thetae1; theta += deltatheta) {
+								for (float rou = diss; rou <= dise; rou += deltarou) {
+									KVec3 tpoint = SCToCCoordinate(fai, theta, rou) + pobj->centerpoint;
+									if (!XENTITYMGR.IsPointInBlock(tpoint)) {
+										//点云
+										dotcloudvec[0].push_back(tpoint);
+									}
+								}
+							}
+						}
+						for (float fai = 90.0f - myfaie; fai <= 90.0f - myfais; fai += deltafai) {
+							for (float theta = thetas2; theta <= thetae2; theta += deltatheta) {
+								for (float rou = diss; rou <= dise; rou += deltarou) {
+									KVec3 tpoint = SCToCCoordinate(fai, theta, rou) + pobj->centerpoint;
+									if (!XENTITYMGR.IsPointInBlock(tpoint)) {
+										//点云
+										dotcloudvec[0].push_back(tpoint);
+									}
+								}
+							}
+						}
+					}//else for istwosides
+
+					cout << "\ngg";
+					cout << dotcloudvec[0].size();
+
+					//???
+
+				}//else for 如果不存在 perfect
+			}//如果是cut
+			else {
+				throw XError("ERROR:shotmethod error at init,is:" + shotmethod);
 			}
 
 		}//物体非空
@@ -213,6 +305,12 @@ void Primitive2::Init() {
 			throw XError("!!!EntityGetError:Name:" + mainobjvec[0]);
 		}
 	}//1个物体
+	else if (mainobjvec.size() >= 2) {
+
+	}//多个物体
+	else {
+		throw XError("ERROR:0 object in prim2");
+	}
 }
 
 float Primitive2::JudgeComplete(int vcandidateindex) {
@@ -352,19 +450,63 @@ void Primitive2::ToPrimitive1() {
 	}
 }
 
+//演示中突然旋转360度是因为-359到0插帧的问题
 KVec3 Primitive2::GetRotToCenterPoint(KVec3 vpos) {
 	float x = vpos.x-centerpoint.x, y = vpos.y-centerpoint.y, z = vpos.z-centerpoint.z;
 	float yaw=-1.0f;	
+	//cout << "\nAfter cut" << x << " " << y << " " << z<<"\n";
+	/*
 		if (x >= 0.0f&&y > 0.0f) {
 			yaw = -ArcToDegree(atanf(x / y));
+			cout << "\ny1";
 		}
 		else if (y < 0.0f) {
 			yaw = -180.0f - ArcToDegree(atanf(x / y));
+			cout << "\ny2";
 		}
 		else if (x<0.0f&&y>0.0f) {
 			yaw = -360.0f - ArcToDegree(atanf(x / y));
+			cout << "\ny3";
 		}
-		yaw += 270.0f;
+		else if (y = 0.0f) {
+			if (x >= 0.0f) {
+				yaw = -90.0f;
+			}
+			else {
+				yaw = -180.0f;
+			}
+		}
+		yaw += 270.0f;*/
+	/*
+	x>0, y <= 0:atan(y / x)[0, -90]
+		x<0, y <= 0 : -90 - atan(y / x)[-90, -180]
+		x<0, y>0 : -180 + atan(y / x)
+		x>0, y>0:-360 + atan(y / x)
+		*/
+	if (x < 0.0f&&y>=0.0f) {
+		yaw = atanf(y / x);
+		//cout << "\ny1";
+	}
+	else if(x>0.0f&&y>=0.0f){
+		yaw = -90.0f - atanf(y / x);
+		//cout << "\ny2";
+	}
+	else if (x>0.0f&&y<0.0f) {
+		yaw = -180.0f + atanf(y / x);
+		//cout << "\ny3";
+	}
+	else if (x < 0.0f&&y < 0.0f) {
+		yaw = -360.0f + atanf(y / x);
+		//cout << "\ny4";
+	}
+	else if(x=0.0f){
+		if (y >= 0.0f) {
+			yaw = -90.0f;
+		}
+		else {
+			yaw = -270.0f;
+		}
+	}
 	return KVec3(-90.0f+ArcToDegree(acosf(z / sqrtf(x*x + y*y + z*z))), yaw,  0.0f);
 }
 

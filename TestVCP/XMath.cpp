@@ -17,6 +17,18 @@ KVec3 SCToCCoordinate(float fai, float theta, float rou) {
 	return KVec3(x, y, z);
 }
 
+KVec3 CCToSCoordinate(float x, float y, float z) {
+	float fai = -1.0f, theta = -1.0f, rou = -1.0f;
+	fai = ArcToDegree(atanf(x / y));
+	rou = sqrtf(x*x + y*y + z*z);
+	theta = ArcToDegree(acosf(z / rou));
+	return KVec3(fai, theta, rou);
+}
+
+KVec3 CCToSCoordinate(KVec3 v) {
+	return CCToSCoordinate(v.x, v.y, v.z);
+}
+
 float ArcToDegree(float arc) {
 	return arc / 2.0f / K_PI*360.0f;
 }

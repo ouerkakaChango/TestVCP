@@ -45,6 +45,8 @@ public:
 	float shottime;
 
 	float diss, dise, myfais, myfaie,mythetas,mythetae;
+	float perfectfai, perfecttheta, perfectrou;
+	KVec3 shotpos=KVec3(-999, -999, -999), shotrot=KVec3(-999, -999, -999);
 	int segsize = -1;
 	vector<vector<KVec3>> dotcloudvec;
 	vector<vector<KVec3>> candidatepathvec;
@@ -66,6 +68,8 @@ public:
 	float JudgeComplete(int vcandidateindex);
 	float JudgeSmoothness(int vcandidateindex);
 	float JudgeFitness(int vcandidateindex);
+
+	bool _IsExistAndSetPerfect1(XEntity* vobj);
 };
 #endif
 
