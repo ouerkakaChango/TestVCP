@@ -5,6 +5,7 @@
 class XDataBox{
 public:
 	int framesize = 60;
+	float nowtime = 0.0f;
 	static XDataBox& GetInstance();
 	vector<float> depression_angle = MakeVec(50.0f, 90.0f);
 	vector<float> level_myfai = MakeVec(-20.0f,0.0f, 20.0f);

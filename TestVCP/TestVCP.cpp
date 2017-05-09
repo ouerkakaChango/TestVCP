@@ -18,9 +18,10 @@ int main()
 	shotvec[0].shotmethod = "Surround";
 	shotvec[0].mainobjvec.push_back("Ground");
 	shotvec[0].shottime = 5.0f;
-	//shotvec[0].Init();
-	//shotvec[0].ToPrimitive1();
-	//shotvec[0].ToJson();
+	shotvec[0].Init();
+	shotvec[0].ToPrimitive1();
+	shotvec[0].ToJson();
+	//shotvec[0].Print();
 	//shotvec[0].ToFile("D:/TestVCPJson.txt");
 	
 	shotvec.push_back(Primitive2());
@@ -31,8 +32,20 @@ int main()
 	shotvec[1].mainobjvec.push_back("Cha1");
 	shotvec[1].shottime = 3.0f;
 	shotvec[1].Init();
-
-
+	shotvec[1].ToPrimitive0();
+	shotvec[1].ToJson();
+	//shotvec[1].Print();
+	for (auto iter = shotvec.begin(); iter != shotvec.end(); iter++) {
+		if (iter == shotvec.begin()) {
+			iter->AddToFile("D:/TestVCPJson.txt", true);
+		}
+		else if(iter==shotvec.end()-1){
+			iter->AddToFile("D:/TestVCPJson.txt",false,true);
+		}
+		else {
+			iter->AddToFile("D:/TestVCPJson.txt");
+		}
+	}
 	/*
 	Primitive1 p1;
 	p1.frameids = 1;

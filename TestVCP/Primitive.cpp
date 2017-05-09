@@ -15,6 +15,11 @@ void Primitive0::Print() {
 	rot.Print();
 }
 
+string Primitive0::ToJson() {
+	return "{\"frameid\":" + int2string(frameid) + ",\"pos\":[" + float2string(pos.x) + "," + float2string(pos.y) + "," + float2string((pos.z)) + 
+		"],\"rot\":[" + float2string(rot.x) + "," + float2string(rot.y) + "," + float2string(rot.z) + "]}";
+}
+
 Primitive1::Primitive1(int vfs, int vfe, KVec3 vposs, KVec3 vpose, KVec3 vrots, KVec3 vrote):frameids(vfs),frameide(vfe),poss(vposs),pose(vpose),rots(vrots),rote(vrote),
 bposstatic(false),brotstatic(false),posfuncid(0),rotfuncid(0)
 {
@@ -55,19 +60,13 @@ void Primitive1::Print() {
 
 void Primitive1::ToJson(bool removeHeadTail) {
 	jsonstrvec.clear();
-	if (removeHeadTail) {}
-	else { jsonstrvec.push_back("["); }
+	if (!removeHeadTail) { jsonstrvec.push_back("["); }
 	for(auto iter=prim0vec.begin();iter!=prim0vec.end();iter++){
 		string t = "{\"frameid\":" + int2string((*iter).frameid) + ",\"pos\":[" + float2string((*iter).pos.x) + "," + float2string((*iter).pos.y) + "," + float2string((*iter).pos.z) + "],\"rot\":[" +
 			float2string((*iter).rot.x) + "," + float2string((*iter).rot.y) + "," + float2string((*iter).rot.z) + "]}";
-		if (removeHeadTail) { t += ","; }
-		else {
-			if (iter != prim0vec.end() - 1) { t += ","; }
-		}
 		jsonstrvec.push_back(t);
 	}
-	if (removeHeadTail) {}
-	else { jsonstrvec.push_back("]"); }
+	if (!removeHeadTail) { jsonstrvec.push_back("]"); }
 }
 
 void Primitive1::ToFile(string filepath) {
@@ -119,15 +118,14 @@ void Primitive2::_InitRot() {
 }
 
 bool Primitive2::_IsExistAndSetPerfect1(XEntity* vobj) {
-	//???
 	//中心点+距离*正面方向向量
 	KVec3 tperfectpoint = centerpoint +(vobj->extroinfovec[0])*perfectrou;
 
 	if (!XENTITYMGR.IsPointInBlock(tperfectpoint)&&!XENTITYMGR.IsLineBeBlocked(tperfectpoint.x,tperfectpoint.y,tperfectpoint.z,centerpoint.x,centerpoint.y,centerpoint.z,vobj->name)) {
 		shotpos = tperfectpoint;
 		shotrot = GetRotToCenterPoint(tperfectpoint);
-		cout << "\nPerfectPos:"; shotpos.Print();
-		cout << "\nPerfectRot:"; shotrot.Print();
+		//cout << "\nPerfectPos:"; shotpos.Print();
+		//cout << "\nPerfectRot:"; shotrot.Print();
 		return true;
 	}
 	else {
@@ -405,8 +403,10 @@ void Primitive2::PrintPath(){
 
 void Primitive2::ToPrimitive0() {
 	if (shotmethod == "Surround") {
-		int frames = (shotid - 1)*XDATABOX.framesize;
+		int frames = (int)XDATABOX.nowtime*XDATABOX.framesize;
 		int framee = frames + (int)shottime*XDATABOX.framesize;
+		frames += 1;
+		XDATABOX.nowtime += shottime;
 		int numofseg = 360 / segsize;//12
 		float tdeltaframe = static_cast<float>(framee - frames) / numofseg;
 		int tcount = 0;
@@ -420,6 +420,17 @@ void Primitive2::ToPrimitive0() {
 			}
 		}
 	}
+	else if (shotmethod == "Cut") {
+		int frames= (int)XDATABOX.nowtime * XDATABOX.framesize;
+		int framee= frames + (int)shottime*XDATABOX.framesize;
+		frames += 1;
+		XDATABOX.nowtime += shottime;
+		//cout << "\n nowtimes:" << XDATABOX.nowtime<<"\n";
+		//cout << "\n framee:" << framee;
+		for (int id = frames; id <= framee; id++) {
+			prim0vec.push_back(Primitive0(id, shotpos, shotrot));
+		}
+	}
 	else {
 		throw XError("ERROR:ShotMethodError At P2ToP0,ShotMethod:"+shotmethod);
 	}
@@ -428,8 +439,11 @@ void Primitive2::ToPrimitive0() {
 //???类型转换的帧，帧间隔的不整除???
 void Primitive2::ToPrimitive1() {
 	if (shotmethod == "Surround") {
-		int frames = (shotid - 1)*XDATABOX.framesize;
+		int frames =(int) XDATABOX.nowtime * XDATABOX.framesize;
 		int framee = frames + (int)shottime*XDATABOX.framesize;
+		frames += 1;
+		XDATABOX.nowtime += shottime;
+		//cout << "\n" << XDATABOX.nowtime << "\n";
 		int numofseg = 360 / segsize;//12
 		float tdeltaframe = static_cast<float>(framee - frames) / numofseg;
 		int tnowframe = frames;
@@ -516,16 +530,26 @@ void Primitive2::Print() {
 	}
 }
 
-void Primitive2::ToJson() {
-	jsonstrvec.clear();
-	jsonstrvec.push_back("[");
-	for (auto p1 : prim1vec) {
-		p1.ToPrimitive0();
-		p1.ToJson(true);
-		std::copy(p1.jsonstrvec.begin(), p1.jsonstrvec.end(), std::back_inserter(jsonstrvec));
+void Primitive2::ToJson(bool removeheadtail) {
+	if (shotmethod == "Surround") {
+		jsonstrvec.clear();
+		if (!removeheadtail) { jsonstrvec.push_back("["); }
+		for (auto p1 : prim1vec) {
+			p1.ToPrimitive0();
+			p1.ToJson(true);
+			std::copy(p1.jsonstrvec.begin(), p1.jsonstrvec.end(), std::back_inserter(jsonstrvec));
+		}
+		//jsonstrvec[jsonstrvec.size() - 1].erase(jsonstrvec[jsonstrvec.size() - 1].end() - 1);
+		if (!removeheadtail) { jsonstrvec.push_back("]"); }
 	}
-	jsonstrvec[jsonstrvec.size() - 1].erase(jsonstrvec[jsonstrvec.size() - 1].end() - 1);
-	jsonstrvec.push_back("]");
+	else if (shotmethod == "Cut") {
+		for (auto& i : prim0vec) {
+			jsonstrvec.push_back(i.ToJson());
+		}
+	}
+	else {
+		throw XError("ERROR:shotmethod at ToJson,is:" + shotmethod);
+	}
 }
 
 void Primitive2::ToFile(string filepath) {
@@ -535,4 +559,27 @@ void Primitive2::ToFile(string filepath) {
 	}
 	of.close();
 	cout << "File write ok.\n";
+}
+
+void Primitive2::AddToFile(string filepath, bool isfirst, bool islast) {
+	std::ofstream outfile;
+	outfile.open(filepath, std::ios::app);
+	if (!outfile) //检查文件是否正常打开
+	{
+		throw XError("ERROR:file cannot open at AddToFile(),is:" + filepath);
+	}
+	else
+	{
+		if (isfirst) { outfile << "["; }
+		for (auto iter = jsonstrvec.begin(); iter != jsonstrvec.end(); iter++) {
+			if (islast&&iter == jsonstrvec.end() - 1) {
+				outfile << *iter;
+			}
+			else {
+				outfile << ((*iter) + ",");
+			}
+		}
+		if (islast) { outfile << "]"; }
+		outfile.close();
+	}
 }

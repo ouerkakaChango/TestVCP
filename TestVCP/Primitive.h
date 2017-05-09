@@ -9,6 +9,7 @@ public:
 	int frameid;
 	KVec3 pos, rot;
 	void Print();
+	string ToJson();
 };
 class Primitive1 {
 public:
@@ -26,7 +27,7 @@ public:
 	KVec3 GetFunctionalRot(int i);
 	void Print();
 	vector<string> jsonstrvec;
-	void ToJson(bool removeHeadTail=false);
+	void ToJson(bool removeHeadTail=true);
 	void ToFile(string filepath);
 };
 class XEntity;
@@ -62,8 +63,9 @@ public:
 	void Print();
 	void ToPrimitive0();
 	void ToPrimitive1();
-	void ToJson();
+	void ToJson(bool removeheadtail=true);
 	void ToFile(string filepath);
+	void AddToFile(string filepath, bool isfirst = false,bool islast=false);
 	KVec3 GetRotToCenterPoint(KVec3 vpos);
 	float JudgeComplete(int vcandidateindex);
 	float JudgeSmoothness(int vcandidateindex);
