@@ -3,10 +3,8 @@
 //x=k*y+t
 class XLine{
 public:
-	float k, t,A;
-	bool isA=false;
-	XLine(float vk, float vt) :k(vk),t(vt),isA(false) {}
-	XLine(float vA) :A(vA),isA(true) {}
+	float a, b, c;
+	XLine(float va, float vb, float vc) :a(va), b(vb), c(vc) {}
 	void Print();
 };
 #endif

@@ -210,7 +210,7 @@ void Primitive2::Init() {
 				int tbesti = 0;
 				for (int cani = 0; cani < candidatesize; cani++) {
 					//从每个区域随机出一个点然后相连，生成路径
-					for (int i = 0; i < dotcloudvec.size(); i++) {
+					for (int i = 0; i < (int)dotcloudvec.size(); i++) {
 						candidatepathvec[cani].push_back(GetRandomPointAtSeg(i));
 					}
 					//candidatepathvec[cani].push_back(candidatepathvec[cani][0]);
@@ -326,7 +326,7 @@ void Primitive2::Init() {
 	}//1个物体
 	else if (mainobjvec.size() >= 2) {
 		if (shotmethod == "Cut") {
-			float tsize = mainobjvec.size();
+			float tsize = (int)mainobjvec.size();
 			_CalculateSizeAndCenterPoint();
 			//???
 			//获得约束线集合（1,2,3条）
@@ -334,9 +334,13 @@ void Primitive2::Init() {
 			XLinearConstrainter tconter;
 			for (int i = 0; i < tsize - 1; i++) {
 				auto tobj1 = XENTITYMGR.Get(mainobjvec[ IndexOfValue(compositionvec,i)]);
+				float y1 = tobj1->centerpoint.y;
+				float x1 = tobj1->centerpoint.x;
 				for (int j = i + 1; j < tsize; j++) {
 					auto tobj2 = XENTITYMGR.Get(mainobjvec[IndexOfValue(compositionvec, j)]);
-					tconter.PushLine(tobj1->centerpoint.y, tobj1->centerpoint.x, tobj2->centerpoint.y, tobj2->centerpoint.x,i,j);
+					float y2 = tobj2->centerpoint.y;
+					float x2 = tobj2->centerpoint.x;
+					tconter.PushLine(y1,x1,y2,x2,i,j);
 				}
 			}
 			//2.简化
@@ -494,7 +498,7 @@ void Primitive2::ToPrimitive1() {
 		               //13-2=11
 		int i = 0;
 		KVec3 tp1=KVec3(-999,-999,-999), tp2 = KVec3(-999, -999, -999);
-		for (i=0;i<pathvec.size()-2;i++){
+		for (i=0;i<(int)(pathvec.size()-2);i++){
 			tp1= pathvec[i], tp2= pathvec[i + 1];
 			prim1vec.push_back(Primitive1(tnowframe, tnowframe + (int)tdeltaframe, tp1, tp2, GetRotToCenterPoint(tp1), GetRotToCenterPoint(tp2)));
 			tnowframe += (int)tdeltaframe + 1;

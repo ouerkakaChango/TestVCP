@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <algorithm>
 using std::vector;
 using std::cout;
 using std::string;
@@ -23,5 +24,6 @@ int IndexOfValue(vector<int>& vec, int value);
 cout<<"\n"<<#v<<" ";\
 v.Print();\
 }while (0)
+#define XFIND(vec,value) std::find(vec.begin(),vec.end(),value)!=vec.end()
 #endif
 
