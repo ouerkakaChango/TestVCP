@@ -42,8 +42,10 @@ int main()
 	shotvec[2].distanceLOD = "SmallFull";
 	shotvec[2].angleLOD = "Level";
 	shotvec[2].shotmethod = "Cut";
-	shotvec[2].mainobjvec.push_back("Cha2");
 	shotvec[2].mainobjvec.push_back("Cha3");
+	shotvec[2].mainobjvec.push_back("Cha2");
+	shotvec[2].compositionvec.push_back(1);
+	shotvec[2].compositionvec.push_back(0);
 	shotvec[2].shottime = 3.0f;
 	shotvec[2].Init();
 

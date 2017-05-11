@@ -48,6 +48,12 @@
     <ClInclude Include="XMath.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="XLinearConstrainter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XLine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +84,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="XMath.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="XLinearConstrainter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="XLine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

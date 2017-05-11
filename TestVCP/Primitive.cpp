@@ -7,6 +7,7 @@
 #include "XDataBox.h"
 #include "XMath.h"
 #include "FFLLAPI.h"	
+#include "XLinearConstrainter.h"
 
 void Primitive0::Print() {
 	cout << "\nframeid:" << frameid <<"\npos:";
@@ -325,10 +326,24 @@ void Primitive2::Init() {
 	}//1个物体
 	else if (mainobjvec.size() >= 2) {
 		if (shotmethod == "Cut") {
+			float tsize = mainobjvec.size();
 			_CalculateSizeAndCenterPoint();
 			//???
+			//获得约束线集合（1,2,3条）
+			//1.初始化所有直线
+			XLinearConstrainter tconter;
+			for (int i = 0; i < tsize - 1; i++) {
+				auto tobj1 = XENTITYMGR.Get(mainobjvec[ IndexOfValue(compositionvec,i)]);
+				for (int j = i + 1; j < tsize; j++) {
+					auto tobj2 = XENTITYMGR.Get(mainobjvec[IndexOfValue(compositionvec, j)]);
+					tconter.PushLine(tobj1->centerpoint.y, tobj1->centerpoint.x, tobj2->centerpoint.y, tobj2->centerpoint.x,i,j);
+				}
+			}
+			//2.简化
+			tconter.Simplify();
 			//确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
 			//即InitDis,Rot()...
+			XPRINT(tconter);
 		}
 		else {
 			throw XError("ERROR:shotmethod error at init,is:" + shotmethod);

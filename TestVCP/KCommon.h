@@ -17,6 +17,7 @@ string float2string(float n);
 string int2string(int n);
 vector<float> MakeVec(float x, float y, float z);
 vector<float> MakeVec(float x, float y);
+int IndexOfValue(vector<int>& vec, int value);
 #define K_PI 3.14159265358979323846f
 #define XPRINT(v) do{ \
 cout<<"\n"<<#v<<" ";\

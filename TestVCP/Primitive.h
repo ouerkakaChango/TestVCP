@@ -42,7 +42,7 @@ public:
 	int shotid;
 	string distanceLOD, angleLOD, shotmethod;
 	vector<string> mainobjvec;
-	vector<string> compositionvec;
+	vector<int> compositionvec;
 	vector<string> techvec;
 	float shottime;
 

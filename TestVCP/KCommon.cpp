@@ -1,6 +1,7 @@
 #include "KCommon.h"
 #include <math.h>
 #include <sstream>
+#include <algorithm>
 using std::ostringstream;
 
 KCommon::KCommon()
@@ -44,4 +45,8 @@ vector<float> MakeVec(float x, float y) {
 	re.push_back(x);
 	re.push_back(y);
 	return re;
+}
+
+int IndexOfValue(vector<int>& vec, int value) {
+	return std::find(vec.begin(), vec.end(), value) - vec.begin();
 }

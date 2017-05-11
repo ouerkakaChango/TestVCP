@@ -161,6 +161,8 @@
     <ClInclude Include="XDataBox.h" />
     <ClInclude Include="XEntity.h" />
     <ClInclude Include="XError.h" />
+    <ClInclude Include="XLine.h" />
+    <ClInclude Include="XLinearConstrainter.h" />
     <ClInclude Include="XMath.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +175,8 @@
     <ClCompile Include="XDataBox.cpp" />
     <ClCompile Include="XEntity.cpp" />
     <ClCompile Include="XError.cpp" />
+    <ClCompile Include="XLine.cpp" />
+    <ClCompile Include="XLinearConstrainter.cpp" />
     <ClCompile Include="XMath.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
