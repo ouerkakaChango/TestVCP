@@ -36,6 +36,7 @@ private:
 	KVec3 centerpoint=KVec3(-999,-999,-999);
 	void _InitDis(XEntity* vcenterentity);
 	void _InitRot();
+	void _CalculateSizeAndCenterPoint();
 public:
 	Primitive2() {}
 	int shotid;
@@ -47,6 +48,7 @@ public:
 
 	float diss, dise, myfais, myfaie,mythetas,mythetae;
 	float perfectfai, perfecttheta, perfectrou;
+	float size;
 	KVec3 shotpos=KVec3(-999, -999, -999), shotrot=KVec3(-999, -999, -999);
 	int segsize = -1;
 	vector<vector<KVec3>> dotcloudvec;
@@ -70,6 +72,8 @@ public:
 	float JudgeComplete(int vcandidateindex);
 	float JudgeSmoothness(int vcandidateindex);
 	float JudgeFitness(int vcandidateindex);
+
+	void SetPosRotInDotCloud();
 
 	bool _IsExistAndSetPerfect1(XEntity* vobj);
 };

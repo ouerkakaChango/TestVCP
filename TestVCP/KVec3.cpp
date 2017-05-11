@@ -1,6 +1,7 @@
 #include "KVec3.h"
 #include "KCommon.h"
 #include "XMath.h"
+#include "XError.h"
 #include <math.h>
 
 void KVec3::SetNormal() {
@@ -36,8 +37,25 @@ KVec3 KVec3::operator+(KVec3& v) {
 	return KVec3(x + v.x, y + v.y, z + v.z);
 }
 
+void  KVec3::operator+=(KVec3 v) {
+	x += v.x;
+	y += v.y;
+	z += v.z;
+}
+
 KVec3 KVec3::operator/(float n) {
 	return KVec3(x / n, y / n, z / n);
+}
+
+void KVec3::operator/=(float n) {
+	if (NearlyEqualf(n, 0.0f)) {
+		throw XError("\nError:0 at operator/=");
+	}
+	else {
+		x /= n;
+		y /= n;
+		z /= n;
+	}
 }
 
 KVec3 KVec3::operator*(float n) {

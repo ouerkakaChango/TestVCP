@@ -134,6 +134,26 @@ bool Primitive2::_IsExistAndSetPerfect1(XEntity* vobj) {
 	}
 }
 
+//???
+void Primitive2::SetPosRotInDotCloud() {
+	if (shotmethod == "Cut") {
+		//???
+	}
+	else {
+		throw XError("ERROR:shotmethod error at SetPosRotInDotCloud,is:" + shotmethod);
+	}
+}
+
+void Primitive2::_CalculateSizeAndCenterPoint() {
+	size= (XENTITYMGR.Get(mainobjvec[0])->centerpoint- XENTITYMGR.Get(mainobjvec.back())->centerpoint).GetLength();
+	KVec3 tcen(0.0f, 0.0f, 0.0f);
+	for (auto& i : mainobjvec) {
+		tcen += XENTITYMGR.Get(i)->centerpoint;
+	}
+	tcen /= (int)mainobjvec.size();
+	centerpoint = tcen;
+}
+
 void Primitive2::Init() {
 	if (mainobjvec.size() == 1) {
 		auto pobj = XENTITYMGR.Get(mainobjvec[0]);
@@ -290,7 +310,7 @@ void Primitive2::Init() {
 					cout << "\ngg";
 					cout << dotcloudvec[0].size();
 
-					//???
+					SetPosRotInDotCloud();
 
 				}//else for 如果不存在 perfect
 			}//如果是cut
@@ -300,15 +320,23 @@ void Primitive2::Init() {
 
 		}//物体非空
 		else {
-			throw XError("!!!EntityGetError:Name:" + mainobjvec[0]);
+			throw XError("!!!EntityGetError:nullptr at Init(),Name:" + mainobjvec[0]);
 		}
 	}//1个物体
 	else if (mainobjvec.size() >= 2) {
-
+		if (shotmethod == "Cut") {
+			_CalculateSizeAndCenterPoint();
+			//???
+			//确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
+			//即InitDis,Rot()...
+		}
+		else {
+			throw XError("ERROR:shotmethod error at init,is:" + shotmethod);
+		}
 	}//多个物体
 	else {
 		throw XError("ERROR:0 object in prim2");
-	}
+	}//无物体
 }
 
 float Primitive2::JudgeComplete(int vcandidateindex) {

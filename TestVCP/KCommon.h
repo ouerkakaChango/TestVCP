@@ -18,5 +18,9 @@ string int2string(int n);
 vector<float> MakeVec(float x, float y, float z);
 vector<float> MakeVec(float x, float y);
 #define K_PI 3.14159265358979323846f
+#define XPRINT(v) do{ \
+cout<<"\n"<<#v<<" ";\
+v.Print();\
+}while (0)
 #endif
 

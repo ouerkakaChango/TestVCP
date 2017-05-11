@@ -13,6 +13,8 @@ public:
 	KVec3 operator+(KVec3& v);
 	KVec3 operator/(float n);
 	KVec3 operator*(float n);
+	void operator+=(KVec3 v);
+	void operator/=(float n);
 	float GetLineDis(KVec3 v, KVec3 vab);
 	float GetAngleBetween(KVec3 vn);
 	bool NearlyEqual(KVec3 v);
