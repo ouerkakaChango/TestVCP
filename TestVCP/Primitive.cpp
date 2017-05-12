@@ -151,7 +151,7 @@ void Primitive2::_CalculateSizeAndCenterPoint() {
 	for (auto& i : mainobjvec) {
 		tcen += XENTITYMGR.Get(i)->centerpoint;
 	}
-	tcen /= (int)mainobjvec.size();
+	tcen /= static_cast<float>((int)mainobjvec.size());
 	centerpoint = tcen;
 }
 
@@ -326,12 +326,18 @@ void Primitive2::Init() {
 	}//1个物体
 	else if (mainobjvec.size() >= 2) {
 		if (shotmethod == "Cut") {
-			float tsize = (int)mainobjvec.size();
+			int tsize = (int)mainobjvec.size();
 			_CalculateSizeAndCenterPoint();
 			//???
 			//获得约束线集合（1,2,3条）
 			//1.初始化所有直线
 			XLinearConstrainter tconter;
+			for (int i = 0; i < tsize; i++) {
+				auto tobj1 = XENTITYMGR.Get(mainobjvec[IndexOfValue(compositionvec, i)]);
+				float ty1 = tobj1->centerpoint.y;
+				float tx1 = tobj1->centerpoint.x;
+				tconter.pointvec.push_back(XVec2(ty1, tx1));
+			}
 			for (int i = 0; i < tsize - 1; i++) {
 				auto tobj1 = XENTITYMGR.Get(mainobjvec[ IndexOfValue(compositionvec,i)]);
 				float y1 = tobj1->centerpoint.y;

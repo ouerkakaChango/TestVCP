@@ -164,6 +164,7 @@
     <ClInclude Include="XLine.h" />
     <ClInclude Include="XLinearConstrainter.h" />
     <ClInclude Include="XMath.h" />
+    <ClInclude Include="XVec2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KCommon.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="XLine.cpp" />
     <ClCompile Include="XLinearConstrainter.cpp" />
     <ClCompile Include="XMath.cpp" />
+    <ClCompile Include="XVec2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

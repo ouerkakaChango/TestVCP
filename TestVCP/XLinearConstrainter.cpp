@@ -2,6 +2,7 @@
 #include "XError.h"
 void XLinearConstrainter::PushLine(float y1, float x1, float y2, float x2, int vid1, int vid2) {
 	float a = x2 - x1, b = y1 - y2, c = y2*x1 - y1*x2;
+	/*
 	bool tgt = true;
 	if (NearlyEqualf(b, 0.0f)) {
 		//默认b为0时a不可能为0,a>0
@@ -14,10 +15,13 @@ void XLinearConstrainter::PushLine(float y1, float x1, float y2, float x2, int v
 		tgt = y1 > y2;
 		if (b < 0) { tgt = !tgt; }//b<0
 	}
-	constraintvec.push_back(XIDLine(XLine(a, b, c), vid1, vid2,tgt));
+	*/
+	XVec2 tvec(y2-y1,x2-x1);
+	tvec.Normallize();
+	constraintvec.push_back(XIDLine(XLine(a, b, c), vid1, vid2,tvec));
 }
 
-bool XLinearConstrainter::IsLineSame(XIDLine& vidline, int vid1, int vid2) {
+bool XLinearConstrainter::IsLineSame(const XIDLine& vidline, int vid1, int vid2) {
 	int tid1 = std::get<1>(vidline), tid2 = std::get<2>(vidline);
 	return tid1 == vid1&&tid2 == vid2;
 }
@@ -31,17 +35,24 @@ bool XLinearConstrainter::IsExist(int i, int j) {
 	}
 	return false;
 }
+bool XLinearConstrainter::LineIntersction(const XIDLine& vline1,const XIDLine& vline2, XVec2& outpoint) {
+       //???
+	//判断两线是否相交，如相交就把结果存入outpoint
 
-bool XLinearConstrainter::IsHaveIntersection(int i, int j, int k, XIDLine& vidline) {
+	//***
+	return false;
+}
+
+bool XLinearConstrainter::IsNeedReserve(int i, int j, int k, const XIDLine& vidline) {
 	//???
 	//判断(i,j)(j,k)的射线对与直线vidline有无交点
-	//符合两条线的点满足两个关系式，求存在问题
 	//默认不存在两线为一条线的情况
+
+	//***
 	return false;
 }
 
 void XLinearConstrainter::Simplify() {
-	//???
 	//将不需要的直线除去
 	//1.取i,j=i+1,k=j+1的三点组成的两线(i,j)(j,k),获取射线对。若(i,j)或(j,k)已不在constraintvec中，则continue;
 	//2.遍历constraintvec中其他非(i,j)(j,k)的线，看与射线对若无交点，则从constraintvec中去除
@@ -57,7 +68,7 @@ void XLinearConstrainter::Simplify() {
 							continue;
 						}
 						else {
-							if (IsHaveIntersection(i, j, k, *iter)) {
+							if (IsNeedReserve(i, j, k, *iter)) {
 								//保留
 								iter++;
 							}
