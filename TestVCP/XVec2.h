@@ -10,6 +10,10 @@ public:
 	friend float Cross(const XVec2& v1, const XVec2& v2);
 	friend bool IsSameDir(XVec2 v1, XVec2 v2);
 	XVec2 operator-();
+	XVec2 operator- (const XVec2& v) const;
+	XVec2 operator+(XVec2& v);
+	XVec2 operator/(float n);
+	void Print();
 };
 float Cross(const XVec2& v1, const XVec2& v2);
 bool IsSameDir( XVec2 v1,  XVec2 v2);

@@ -22,6 +22,22 @@ XVec2 XVec2::operator-() {
 	return XVec2(-y, -x);
 }
 
+XVec2 XVec2::operator-(const XVec2& v) const{
+	return XVec2(y - v.y, x - v.x);
+}
+
+XVec2 XVec2::operator+(XVec2& v) {
+	return XVec2(y + v.y, x + v.x);
+}
+
+XVec2 XVec2::operator/(float n) {
+	return XVec2(y / n, x / n);
+}
+
+void XVec2::Print() {
+	cout << "\nvec2:y=" << y << ",x=" << x;
+}
+
 float Cross(const XVec2& v1, const XVec2& v2) {
 	//x1y2-x2y1
 	return v1.y*v2.x - v2.y*v1.x;

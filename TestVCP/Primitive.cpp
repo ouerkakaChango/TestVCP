@@ -328,7 +328,6 @@ void Primitive2::Init() {
 		if (shotmethod == "Cut") {
 			int tsize = (int)mainobjvec.size();
 			_CalculateSizeAndCenterPoint();
-			//???
 			//获得约束线集合（1,2,3条）
 			//1.初始化所有直线
 			XLinearConstrainter tconter;
@@ -351,9 +350,10 @@ void Primitive2::Init() {
 			}
 			//2.简化
 			tconter.Simplify();
-			//确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
-			//即InitDis,Rot()...
 			XPRINT(tconter);
+			//为点云做准备，确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
+			//即InitDis,Rot()...
+			//???
 		}
 		else {
 			throw XError("ERROR:shotmethod error at init,is:" + shotmethod);
