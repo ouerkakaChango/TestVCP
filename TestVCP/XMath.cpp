@@ -30,7 +30,11 @@ KVec3 CCToSCoordinate(KVec3 v) {
 }
 
 float ArcToDegree(float arc) {
-	return arc / 2.0f / K_PI*360.0f;
+	return arc  / K_PI*180.0f;
+}
+
+float DegreeToArc(float degree) {
+	return degree / 180.0f*K_PI;
 }
 
 float GetStandardDeviation(vector<float> vec) {

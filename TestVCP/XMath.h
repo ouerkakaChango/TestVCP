@@ -14,5 +14,6 @@ KVec3 SCToCCoordinate(float fai, float theta, float rou);
 KVec3 CCToSCoordinate(float x, float y, float z);
 KVec3 CCToSCoordinate(KVec3 v);
 float ArcToDegree(float arc);
+float DegreeToArc(float degree);
 float GetStandardDeviation(vector<float> vec);
 #endif

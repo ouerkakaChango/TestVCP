@@ -92,7 +92,25 @@ void Primitive2::_InitDis(XEntity* vcenterentity) {
 		perfectrou = vcenterentity->size*XDATABOX.smallfull_dis_capsule_rate[1];
 	}
 	else {
-		throw XError("ERROR:distanceLOD error at Init,is:" + distanceLOD);
+		throw XError("ERROR:distanceLOD error at Primitive2::_InitDis,is:" + distanceLOD);
+	}
+}
+
+void Primitive2::_InitDis() {
+	string ttype = XENTITYMGR.Get(mainobjvec[0])->collisiontype;
+	if (distanceLOD == "Far") {
+		auto tdis = XDATABOX.GetFar_dis(ttype, size);
+		diss = tdis[0];
+		dise = tdis[1];
+	}
+	else if (distanceLOD == "SmallFull") {
+		auto tdis = XDATABOX.GetSmallFull_dis(ttype, size);
+		diss = tdis[0];
+		dise = tdis[1];
+		perfectrou = size*XDATABOX.smallfull_dis_capsule_rate[1];
+	}
+	else {
+		throw XError("ERROR:distanceLOD error at Primitive2::_InitDis,is:" + distanceLOD);
 	}
 }
 
@@ -350,9 +368,13 @@ void Primitive2::Init() {
 			}
 			//2.简化
 			tconter.Simplify();
-			XPRINT(tconter);
+			//XPRINT(tconter);
 			//为点云做准备，确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
-			//即InitDis,Rot()...
+			XVec2 tcirclepoint = tconter.GetCirclePoint();
+			XPRINT(tcirclepoint);
+			_InitDis();
+			_InitRot();
+			//diss/e,myfais/e,mythetas/e ready.
 			//???
 		}
 		else {

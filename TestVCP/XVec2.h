@@ -13,6 +13,7 @@ public:
 	XVec2 operator- (const XVec2& v) const;
 	XVec2 operator+(XVec2& v);
 	XVec2 operator/(float n);
+	XVec2 Rotate(float vangle);
 	void Print();
 };
 float Cross(const XVec2& v1, const XVec2& v2);

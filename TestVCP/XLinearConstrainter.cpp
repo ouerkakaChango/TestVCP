@@ -149,6 +149,25 @@ void XLinearConstrainter::Simplify() {
 	cout << "\nSimplify Done";
 }
 
+XVec2 XLinearConstrainter::GetCirclePoint() {
+	if (constraintvec.size() == 1) {
+		XIDLine& tlineref = constraintvec[0];
+		XVec2 ta = pointvec[std::get<1>(tlineref)];
+		XVec2 tb = pointvec[std::get<2>(tlineref)];
+		XVec2 tv1 = tb - ta;
+		return ta + tv1.Rotate(60.0f);
+	}
+	else if (constraintvec.size() == 2) {
+
+	}
+	else if (constraintvec.size() == 3) {
+
+	}
+	else {
+		throw XError("\nERROR:At XLinearConstrainter::GetCirclePoint()");
+	}
+}
+
 void XLinearConstrainter::Print() {
 	for (auto& i : constraintvec) {
 		std::get<0>(i).Print();
@@ -156,6 +175,7 @@ void XLinearConstrainter::Print() {
 	    std::get<3>(i).Print();
 	}
 }
+
 
 bool IsSatisfy(const XIDLine& vlinea, const XIDLine& vlineb, const XVec2& vtestpoint) {
 	XLine tl1 = std::get<0>(vlinea);

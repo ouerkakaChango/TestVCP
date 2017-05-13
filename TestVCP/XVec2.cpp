@@ -34,6 +34,28 @@ XVec2 XVec2::operator/(float n) {
 	return XVec2(y / n, x / n);
 }
 
+XVec2 XVec2::Rotate(float vangle) {
+	float tlength = GetLength();
+	if (NearlyEqualf(tlength, 0.0f)) {
+		cout << "\nWARNING:Rotate Vec2(0,0)";
+		return *this;
+	}
+	else {
+		float ttheta = -999.0f;
+		if (!NearlyEqualf(y, 0.0f)) {
+			ttheta = atanf(x / y);
+		}
+		else {
+			if (x > 0.0f) { ttheta = K_PI / 2.0f; }
+			else { ttheta = -K_PI / 2.0f; }
+		}
+		cout << "\n" << ArcToDegree(ttheta);
+		ttheta += DegreeToArc(vangle);
+		cout << "\n" << ArcToDegree(ttheta);
+		return XVec2(tlength*cosf(ttheta), tlength*sinf(ttheta));
+	}
+}
+
 void XVec2::Print() {
 	cout << "\nvec2:y=" << y << ",x=" << x;
 }

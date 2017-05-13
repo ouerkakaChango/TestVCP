@@ -35,6 +35,7 @@ class Primitive2 {
 private:
 	KVec3 centerpoint=KVec3(-999,-999,-999);
 	void _InitDis(XEntity* vcenterentity);
+	void _InitDis();
 	void _InitRot();
 	void _CalculateSizeAndCenterPoint();
 public:
