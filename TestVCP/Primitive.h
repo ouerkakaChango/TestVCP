@@ -70,6 +70,7 @@ public:
 	void ToFile(string filepath);
 	void AddToFile(string filepath, bool isfirst = false,bool islast=false);
 	KVec3 GetRotToCenterPoint(KVec3 vpos);
+	KVec3 GetRotToPoint(KVec3 vpos, KVec3 vpoint);
 	float JudgeComplete(int vcandidateindex);
 	float JudgeSmoothness(int vcandidateindex);
 	float JudgeFitness(int vcandidateindex);
@@ -77,6 +78,7 @@ public:
 	void SetPosRotInDotCloud();
 
 	bool _IsExistAndSetPerfect1(XEntity* vobj);
+	bool _IsExistAndSetPerfect2(KVec3 vpoint, KVec3 vforwardvec);
 };
 #endif
 

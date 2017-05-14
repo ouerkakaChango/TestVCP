@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Primitive.h"
 #include "XEntity.h"
+#include <fstream>
 using namespace std;
 
 int main()
@@ -22,9 +23,10 @@ int main()
 	shotvec[0].shotmethod = "Surround";
 	shotvec[0].mainobjvec.push_back("Ground");
 	shotvec[0].shottime = 5.0f;
-	//shotvec[0].Init();
-	//shotvec[0].ToPrimitive1();
-	//shotvec[0].ToJson();
+	shotvec[0].Init();
+	shotvec[0].ToPrimitive1();
+	shotvec[0].ToJson();
+	//shotvec[0].Print();
 	
 	shotvec.push_back(Primitive2());
 	shotvec[1].shotid = 2;
@@ -33,9 +35,10 @@ int main()
 	shotvec[1].shotmethod = "Cut";
 	shotvec[1].mainobjvec.push_back("Cha1");
 	shotvec[1].shottime = 3.0f;
-	//shotvec[1].Init();
-	//shotvec[1].ToPrimitive0();
-	//shotvec[1].ToJson();
+	shotvec[1].Init();
+	shotvec[1].ToPrimitive0();
+	shotvec[1].ToJson();
+	//shotvec[1].Print();
 
 	shotvec.push_back(Primitive2());
 	shotvec[2].shotid = 3;
@@ -48,8 +51,13 @@ int main()
 	shotvec[2].compositionvec.push_back(0);
 	shotvec[2].shottime = 3.0f;
 	shotvec[2].Init();
+	shotvec[2].ToPrimitive0();
+	shotvec[2].ToJson();
+	//shotvec[2].Print();
 
-	/*
+	ofstream fo("D:/TestVCPJson.txt", ios::trunc);
+	fo.close();
+	
 	for (auto iter = shotvec.begin(); iter != shotvec.end(); iter++) {
 		if (iter == shotvec.begin()) {
 			iter->AddToFile("D:/TestVCPJson.txt", true);
@@ -61,7 +69,7 @@ int main()
 			iter->AddToFile("D:/TestVCPJson.txt");
 		}
 	}
-	*/
+	
 	/*
 	Primitive1 p1;
 	p1.frameids = 1;

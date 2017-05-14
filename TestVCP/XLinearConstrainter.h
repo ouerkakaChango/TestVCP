@@ -18,7 +18,8 @@ public:
 	bool LineIntersction(const XIDLine& vline1, const XIDLine& vline2, XVec2& outpoint);
 	bool IsNeedReserve(int i, int j, int k, const XIDLine& vidline);
 	XIDLine GetLine(int i, int j);
-	XVec2 GetCirclePoint();
+	XVec2 GetCirclePoint(float vangle=60.0f);
+	float GetAB(XVec2& outa,XVec2& outb);
 };
 bool IsSatisfy(const XIDLine& vlinea, const XIDLine& vlineb, const XVec2& vtestpoint);
 #endif

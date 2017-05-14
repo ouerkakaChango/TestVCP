@@ -153,6 +153,26 @@ bool Primitive2::_IsExistAndSetPerfect1(XEntity* vobj) {
 	}
 }
 
+bool Primitive2::_IsExistAndSetPerfect2(KVec3 vpoint,KVec3 vforwardvec) {
+	//???
+	KVec3 tperfectpoint = vpoint + vforwardvec*perfectrou;
+	//cout << "\nperfectrou:" << perfectrou;
+	//XPRINT(vforwardvec);
+	//XPRINT(tperfectpoint);
+	if (!XENTITYMGR.IsPointInBlock(tperfectpoint) && !XENTITYMGR.IsLineBeBlocked(tperfectpoint.x, tperfectpoint.y, tperfectpoint.z, centerpoint.x, centerpoint.y, centerpoint.z, "null")) {
+		shotpos = tperfectpoint;
+		shotrot = GetRotToPoint(tperfectpoint,vpoint);
+		cout << "\nPerfectPos:"; shotpos.Print();
+		XPRINT(vpoint);
+		cout << "\nPerfectRot:"; shotrot.Print();
+		return true;
+	}
+	else {
+		cout << "\nPerfect false";
+		return false;
+	}
+}
+
 //???
 void Primitive2::SetPosRotInDotCloud() {
 	if (shotmethod == "Cut") {
@@ -329,6 +349,7 @@ void Primitive2::Init() {
 					cout << "\ngg";
 					cout << dotcloudvec[0].size();
 
+					//???
 					SetPosRotInDotCloud();
 
 				}//else for 如果不存在 perfect
@@ -370,12 +391,27 @@ void Primitive2::Init() {
 			tconter.Simplify();
 			//XPRINT(tconter);
 			//为点云做准备，确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
-			XVec2 tcirclepoint = tconter.GetCirclePoint();
-			XPRINT(tcirclepoint);
 			_InitDis();
 			_InitRot();
+			XVec2 tcirclepoint = tconter.GetCirclePoint(mythetae*2);
+			XPRINT(tcirclepoint);
+			XVec2 tveca(-99.0f, -99.0f), tvecb(-99.0f, -99.0f);
+			tconter.GetAB(tveca,tvecb);
+			float tt= (tvecb-tveca).GetLength() / 2.0f / sinf(DegreeToArc(mythetae));
+			diss += tt;
+			dise += tt;
+			perfectrou += tt;
 			//diss/e,myfais/e,mythetas/e ready.
 			//???
+			float tz = XENTITYMGR.Get(mainobjvec[0])->centerpoint.z;
+			KVec3 tforward = KVec3((tveca + tvecb) / 2.0f - tcirclepoint,0.0f);
+			tforward.SetNormal();
+			if (_IsExistAndSetPerfect2(KVec3(tcirclepoint,tz), tforward)) {
+
+			}
+			else {
+				cout << "\nNotInPerfect";
+			}
 		}
 		else {
 			throw XError("ERROR:shotmethod error at init,is:" + shotmethod);
@@ -541,54 +577,58 @@ void Primitive2::ToPrimitive1() {
 
 //演示中突然旋转360度是因为-359到0插帧的问题
 KVec3 Primitive2::GetRotToCenterPoint(KVec3 vpos) {
-	float x = vpos.x-centerpoint.x, y = vpos.y-centerpoint.y, z = vpos.z-centerpoint.z;
-	float yaw=-1.0f;	
+	return GetRotToPoint(vpos,centerpoint);
+}
+
+KVec3 Primitive2::GetRotToPoint(KVec3 vpos, KVec3 vpoint) {
+	float x = vpos.x - vpoint.x, y = vpos.y - vpoint.y, z = vpos.z - vpoint.z;
+	float yaw = -1.0f;
 	//cout << "\nAfter cut" << x << " " << y << " " << z<<"\n";
 	/*
-		if (x >= 0.0f&&y > 0.0f) {
-			yaw = -ArcToDegree(atanf(x / y));
-			cout << "\ny1";
-		}
-		else if (y < 0.0f) {
-			yaw = -180.0f - ArcToDegree(atanf(x / y));
-			cout << "\ny2";
-		}
-		else if (x<0.0f&&y>0.0f) {
-			yaw = -360.0f - ArcToDegree(atanf(x / y));
-			cout << "\ny3";
-		}
-		else if (y = 0.0f) {
-			if (x >= 0.0f) {
-				yaw = -90.0f;
-			}
-			else {
-				yaw = -180.0f;
-			}
-		}
-		yaw += 270.0f;*/
+	if (x >= 0.0f&&y > 0.0f) {
+	yaw = -ArcToDegree(atanf(x / y));
+	cout << "\ny1";
+	}
+	else if (y < 0.0f) {
+	yaw = -180.0f - ArcToDegree(atanf(x / y));
+	cout << "\ny2";
+	}
+	else if (x<0.0f&&y>0.0f) {
+	yaw = -360.0f - ArcToDegree(atanf(x / y));
+	cout << "\ny3";
+	}
+	else if (y = 0.0f) {
+	if (x >= 0.0f) {
+	yaw = -90.0f;
+	}
+	else {
+	yaw = -180.0f;
+	}
+	}
+	yaw += 270.0f;*/
 	/*
 	x>0, y <= 0:atan(y / x)[0, -90]
-		x<0, y <= 0 : -90 - atan(y / x)[-90, -180]
-		x<0, y>0 : -180 + atan(y / x)
-		x>0, y>0:-360 + atan(y / x)
-		*/
-	if (x < 0.0f&&y>=0.0f) {
-		yaw = atanf(y / x);
+	x<0, y <= 0 : -90 - atan(y / x)[-90, -180]
+	x<0, y>0 : -180 + atan(y / x)
+	x>0, y>0:-360 + atan(y / x)
+	*/
+	if (x < 0.0f&&y >= 0.0f) {
+		yaw =ArcToDegree( atanf(y / x));
 		//cout << "\ny1";
 	}
-	else if(x>0.0f&&y>=0.0f){
-		yaw = -90.0f - atanf(y / x);
+	else if (x>0.0f&&y >= 0.0f) {
+		yaw = -90.0f - ArcToDegree(atanf(y / x));
 		//cout << "\ny2";
 	}
 	else if (x>0.0f&&y<0.0f) {
-		yaw = -180.0f + atanf(y / x);
+		yaw = -180.0f + ArcToDegree(atanf(y / x));
 		//cout << "\ny3";
 	}
 	else if (x < 0.0f&&y < 0.0f) {
-		yaw = -360.0f + atanf(y / x);
+		yaw = -360.0f + ArcToDegree(atanf(y / x));
 		//cout << "\ny4";
 	}
-	else if(x=0.0f){
+	else if (NearlyEqualf(x,0.0f)) {
 		if (y >= 0.0f) {
 			yaw = -90.0f;
 		}
@@ -596,7 +636,7 @@ KVec3 Primitive2::GetRotToCenterPoint(KVec3 vpos) {
 			yaw = -270.0f;
 		}
 	}
-	return KVec3(-90.0f+ArcToDegree(acosf(z / sqrtf(x*x + y*y + z*z))), yaw,  0.0f);
+	return KVec3(-90.0f + ArcToDegree(acosf(z / sqrtf(x*x + y*y + z*z))), yaw, 0.0f);
 }
 
 void Primitive2::Print() {
