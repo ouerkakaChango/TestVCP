@@ -393,24 +393,25 @@ void Primitive2::Init() {
 			//为点云做准备，确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
 			_InitDis();
 			_InitRot();
-			XVec2 tcirclepoint = tconter.GetCirclePoint(mythetae*2);
-			XPRINT(tcirclepoint);
-			XVec2 tveca(-99.0f, -99.0f), tvecb(-99.0f, -99.0f);
-			tconter.GetAB(tveca,tvecb);
-			float tt= (tvecb-tveca).GetLength() / 2.0f / sinf(DegreeToArc(mythetae));
-			diss += tt;
-			dise += tt;
-			perfectrou += tt;
+			XVec2 tcirclepoint = tconter.GetCirclePoint(mythetae*2);//
+			//XPRINT(tcirclepoint);
+			//XPRINT(tconter);
+			
+			float texrou = tconter.GetEXRou(mythetae);
+			diss += texrou;
+			dise += texrou;
+			perfectrou += texrou;
 			//diss/e,myfais/e,mythetas/e ready.
-			//???
 			float tz = XENTITYMGR.Get(mainobjvec[0])->centerpoint.z;
-			KVec3 tforward = KVec3((tveca + tvecb) / 2.0f - tcirclepoint,0.0f);
+		
+			KVec3 tforward = tconter.GetForward(tcirclepoint);
 			tforward.SetNormal();
 			if (_IsExistAndSetPerfect2(KVec3(tcirclepoint,tz), tforward)) {
 
 			}
 			else {
 				cout << "\nNotInPerfect";
+				//???
 			}
 		}
 		else {

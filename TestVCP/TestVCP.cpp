@@ -7,11 +7,16 @@ using namespace std;
 int main()
 {
 	XEntity e_ground("Ground", "StaticMesh", KVec3(0, 0, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
+	XEntity e_ground2("Ground2", "StaticMesh", KVec3(0, -1500, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
 
 	XEntity e_cha1("Cha1", "Character", KVec3(200, 200, 130), "Capsule", MakeVec(30.0f, 40.0f));
 	e_cha1.extroinfovec.push_back(KVec3(-1.0f,0.0f,0.0f));
 	XEntity cha2("Cha2", "Character", KVec3(200, -400, 130), "Capsule", MakeVec(30.0f, 40.0f));
 	XEntity cha3("Cha3", "Character", KVec3(0, -400, 130), "Capsule", MakeVec(30.0f, 40.0f));
+
+	XEntity cha4("Cha4", "Character", KVec3(300, -1200, 130), "Capsule", MakeVec(30.0f, 40.0f));
+	XEntity cha5("Cha5", "Character", KVec3(100, -1500, 130), "Capsule", MakeVec(30.0f, 40.0f));
+	XEntity cha6("Cha6", "Character", KVec3(-200, -1200, 130), "Capsule", MakeVec(30.0f, 40.0f));
 
 	XEntity e_box1("BlockBox1", "StaticMesh", KVec3(0, -1250, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
 	XEntity e_box2("BlockBox2", "StaticMesh", KVec3(0, 1000, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
@@ -55,6 +60,23 @@ int main()
 	shotvec[2].ToJson();
 	//shotvec[2].Print();
 
+	shotvec.push_back(Primitive2());
+	shotvec[3].shotid = 4;
+	shotvec[3].distanceLOD = "SmallFull";
+	shotvec[3].angleLOD = "Level";
+	shotvec[3].shotmethod = "Cut";
+	shotvec[3].mainobjvec.push_back("Cha4");
+	shotvec[3].mainobjvec.push_back("Cha5");
+	shotvec[3].mainobjvec.push_back("Cha6");
+	shotvec[3].compositionvec.push_back(0);
+	shotvec[3].compositionvec.push_back(1);
+	shotvec[3].compositionvec.push_back(2);
+	shotvec[3].shottime = 3.0f;
+	shotvec[3].Init();
+	shotvec[3].ToPrimitive0();
+	shotvec[3].ToJson();
+	//shotvec[3].Print();
+	
 	ofstream fo("D:/TestVCPJson.txt", ios::trunc);
 	fo.close();
 	

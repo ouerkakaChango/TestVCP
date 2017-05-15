@@ -3,6 +3,7 @@
 #include "XLine.h"
 #include "KCommon.h"
 #include "XVec2.h"
+#include "KVec3.h"
 #include <tuple>
 
 #define XIDLine std::tuple<XLine,int,int,XVec2>
@@ -20,6 +21,8 @@ public:
 	XIDLine GetLine(int i, int j);
 	XVec2 GetCirclePoint(float vangle=60.0f);
 	float GetAB(XVec2& outa,XVec2& outb);
+	float GetEXRou(float vmythetae);
+	KVec3 GetForward(const XVec2& vcirclepoint);
 };
 bool IsSatisfy(const XIDLine& vlinea, const XIDLine& vlineb, const XVec2& vtestpoint);
 #endif

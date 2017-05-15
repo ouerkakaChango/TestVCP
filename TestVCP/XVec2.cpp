@@ -56,13 +56,14 @@ XVec2 XVec2::Rotate(float vangle) {
 	}
 }
 
-void XVec2::Print() {
+void XVec2::Print() const {
 	cout << "\nvec2:y=" << y << ",x=" << x;
 }
 
 float Cross(const XVec2& v1, const XVec2& v2) {
 	//x1y2-x2y1
-	return v1.y*v2.x - v2.y*v1.x;
+	//!!!
+	return -(v1.y*v2.x - v2.y*v1.x);
 }
 
 bool NearlyEqual(const XVec2& v1, const XVec2& v2) {

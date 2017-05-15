@@ -14,7 +14,7 @@ public:
 	XVec2 operator+(XVec2& v);
 	XVec2 operator/(float n);
 	XVec2 Rotate(float vangle);
-	void Print();
+	void Print() const;
 };
 float Cross(const XVec2& v1, const XVec2& v2);
 bool IsSameDir( XVec2 v1,  XVec2 v2);
