@@ -8,6 +8,7 @@ int main()
 {
 	XEntity e_ground("Ground", "StaticMesh", KVec3(0, 0, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
 	XEntity e_ground2("Ground2", "StaticMesh", KVec3(0, -1500, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
+	XEntity e_ground3("Ground3", "StaticMesh", KVec3(0, 1500, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
 
 	XEntity e_cha1("Cha1", "Character", KVec3(200, 200, 130), "Capsule", MakeVec(30.0f, 40.0f));
 	e_cha1.extroinfovec.push_back(KVec3(-1.0f,0.0f,0.0f));
@@ -17,6 +18,11 @@ int main()
 	XEntity cha4("Cha4", "Character", KVec3(300, -1200, 130), "Capsule", MakeVec(30.0f, 40.0f));
 	XEntity cha5("Cha5", "Character", KVec3(100, -1500, 130), "Capsule", MakeVec(30.0f, 40.0f));
 	XEntity cha6("Cha6", "Character", KVec3(-200, -1200, 130), "Capsule", MakeVec(30.0f, 40.0f));
+
+	XEntity cha7("Cha7", "Character", KVec3(300, 1400, 130), "Capsule", MakeVec(30.0f, 40.0f));
+	XEntity cha8("Cha8", "Character", KVec3(100, 1600, 130), "Capsule", MakeVec(30.0f, 40.0f));
+	XEntity cha9("Cha9", "Character", KVec3(-100, 1700, 130), "Capsule", MakeVec(30.0f, 40.0f));
+	XEntity cha10("Cha10", "Character", KVec3(-300, 1300, 130), "Capsule", MakeVec(30.0f, 40.0f));
 
 	XEntity e_box1("BlockBox1", "StaticMesh", KVec3(0, -1250, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
 	XEntity e_box2("BlockBox2", "StaticMesh", KVec3(0, 1000, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
@@ -76,6 +82,26 @@ int main()
 	shotvec[3].ToPrimitive0();
 	shotvec[3].ToJson();
 	//shotvec[3].Print();
+
+	shotvec.push_back(Primitive2());
+	shotvec[4].shotid = 5;
+	shotvec[4].distanceLOD = "SmallFull";
+	shotvec[4].angleLOD = "Level";
+	shotvec[4].shotmethod = "Cut";
+	shotvec[4].mainobjvec.push_back("Cha7");
+	shotvec[4].mainobjvec.push_back("Cha8");
+	shotvec[4].mainobjvec.push_back("Cha9");
+	shotvec[4].mainobjvec.push_back("Cha10");
+	shotvec[4].compositionvec.push_back(0);
+	shotvec[4].compositionvec.push_back(1);
+	shotvec[4].compositionvec.push_back(2);
+	shotvec[4].compositionvec.push_back(3);
+	shotvec[4].shottime = 3.0f;
+	shotvec[4].Init();
+	shotvec[4].ToPrimitive0();
+	shotvec[4].ToJson();
+	//shotvec[4].Print();
+	
 	
 	ofstream fo("D:/TestVCPJson.txt", ios::trunc);
 	fo.close();

@@ -389,15 +389,16 @@ void Primitive2::Init() {
 			}
 			//2.简化
 			tconter.Simplify();
-			//XPRINT(tconter);
+			XPRINT(tconter);
+			
 			//为点云做准备，确定圆心，计算rou范围，theta范围,rou范围由databox中调整得来
 			_InitDis();
 			_InitRot();
 			XVec2 tcirclepoint = tconter.GetCirclePoint(mythetae*2);//
-			//XPRINT(tcirclepoint);
-			//XPRINT(tconter);
+			XPRINT(tcirclepoint);
 			
 			float texrou = tconter.GetEXRou(mythetae);
+			cout << "\nEXROU:"<<texrou;
 			diss += texrou;
 			dise += texrou;
 			perfectrou += texrou;

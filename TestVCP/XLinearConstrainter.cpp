@@ -64,23 +64,38 @@ XIDLine XLinearConstrainter::GetLine(int i, int j) {
 	throw XError("\nError:Line not found at XLinearConstrainter::GetLine()");
 }
 
-bool XLinearConstrainter::IsNeedReserve(int i, int j, int k, const XIDLine& vidline) {
+bool XLinearConstrainter::IsNeedReserve(int i, int j, int k, const XIDLine& vidline, int vmode) {
 	//判断(i,j)(j,k)的射线对与直线vidline有无交点
 	//默认不存在两线为一条线的情况
 	XVec2 ta(-99.0f, -99.0f), tb(-99.0f, -99.0f);
-	XIDLine linea = GetLine(i, j), lineb = GetLine(j, k);
+	XVec2 p = XVec2(-99.0f, -99.0f);
+	XIDLine linea=std::make_tuple(XLine(-99.0f, -99.0f, -99.0f),-1,-1,XVec2(-99.0f,-99.0f)), lineb = std::make_tuple(XLine(-99.0f, -99.0f, -99.0f), -1, -1, XVec2(-99.0f, -99.0f));
+	if (vmode==1) {
+		linea = GetLine(i, j), lineb = GetLine(j, k);
+		p = pointvec[j];
+	}
+	else if(vmode==2){
+		linea = GetLine(i, k), lineb = GetLine(j, k);
+		p = pointvec[k];
+	}
+	else if (vmode == 3) {
+		linea = GetLine(i, j), lineb = GetLine(i, k);
+		p = pointvec[i];
+	}
+	else {
+		throw XError("\nERROR:vmode error at XLinearConstrainter::IsNeedReserve,is:" + int2string(vmode));
+	}
 	bool ista = LineIntersction(linea, vidline, ta), istb = LineIntersction(lineb, vidline, tb);
-	XVec2 pj = pointvec[j];
-
+	
 	if (!ista&&istb) {
 		//判断(j, tb)与A.Vec的叉积，正就删
-		if (Cross(XVec2(tb - pj), std::get<3>(linea)) > 0) {
+		if (Cross(XVec2(tb - p), std::get<3>(linea)) > 0) {
 			return false;
 		}
 	}
 	else if (ista && !istb) {
 		//判断(j, ta)与B.Vec的叉积，正就删
-		if (Cross(XVec2(ta - pj), std::get<3>(lineb)) > 0) {
+		if (Cross(XVec2(ta - p), std::get<3>(lineb)) > 0) {
 			return false;
 		}
 	}
@@ -88,7 +103,7 @@ bool XLinearConstrainter::IsNeedReserve(int i, int j, int k, const XIDLine& vidl
 		throw XError("\nERROR:Both not intersect at XLinearConstrainter::IsNeedReserve()");
 	}
 	else if (ista&&istb) {
-		if (NearlyEqual(ta,tb)&&NearlyEqual(tb,pj)){
+		if (NearlyEqual(ta,tb)&&NearlyEqual(tb,p)){
 			//在vidline上j点处 + 1 - 1，看是否存在满足，都不满足就删
 			//XPRINT(ta);
 			//XPRINT(tb);
@@ -96,8 +111,8 @@ bool XLinearConstrainter::IsNeedReserve(int i, int j, int k, const XIDLine& vidl
 			//cout << "\n>>>i:" << i << " j:" << j << " k:" << k;
 			//cout << "\n linec:" << std::get<1>(vidline)<< std::get<2>(vidline);
 				XLine tlinec = std::get<0>(vidline);
-				XVec2 tcp1 = tlinec.GetTypicalPoint(pj, 1.0f),
-					tcp2 = tlinec.GetTypicalPoint(pj, -1.0f);
+				XVec2 tcp1 = tlinec.GetTypicalPoint(p, 1.0f),
+					tcp2 = tlinec.GetTypicalPoint(p, -1.0f);
 				bool tb1 = IsSatisfy(linea, lineb, tcp1),
 					tb2 = IsSatisfy(linea, lineb, tcp2);
 				if ((!tb1) && (!tb2)) {
@@ -106,8 +121,8 @@ bool XLinearConstrainter::IsNeedReserve(int i, int j, int k, const XIDLine& vidl
 	    }
 		else {
 			//if (i == 0 && j == 1 && k == 2 && t1 == 0 && t2 == 2) { cout << "\n***"; }
-			bool is1 = IsSameDir(XVec2(ta - pj), std::get<3>(linea));// (j, ta)与A.Vec同向？
-			bool is2 = IsSameDir(XVec2(pj-tb), std::get<3>(lineb)); //(tb, j)与B.Vec同向？
+			bool is1 = IsSameDir(XVec2(ta - p), std::get<3>(linea));// (j, ta)与A.Vec同向？
+			bool is2 = IsSameDir(XVec2(p-tb), std::get<3>(lineb)); //(tb, j)与B.Vec同向？
 				if (
 					(is1&&is2) || 
 					((!is1) && (!is2)))
@@ -133,6 +148,8 @@ void XLinearConstrainter::Simplify() {
 	for (int i = 0; i < tsize - 2; i++) {
 		for (int j = i + 1; j < tsize - 1; j++) {
 			for (int k = j + 1; k < tsize; k++) {
+				///////////
+				//mode1:j
 				if (IsExist(i, j) && IsExist(j, k)) {
 					for (auto iter = constraintvec.begin(); iter != constraintvec.end();) {
 						if (IsLineSame(*iter, i, j) || IsLineSame(*iter, j, k)) {
@@ -140,7 +157,7 @@ void XLinearConstrainter::Simplify() {
 							continue;
 						}
 						else {
-							if (IsNeedReserve(i, j, k, *iter)) {
+							if (IsNeedReserve(i, j, k, *iter,1)) {
 								//保留
 								iter++;
 							}
@@ -148,12 +165,49 @@ void XLinearConstrainter::Simplify() {
 								iter=constraintvec.erase(iter);
 							}
 						}
-					}//for
+					}//for for contraintvec
 				}
-				else {
-					continue;
+				////////
+				//mode2:k
+				//if (i == 0 && j == 2 && k == 3) { cout << "\n***"; }
+				if (IsExist(i, k) && IsExist(j, k)) {
+					for (auto iter = constraintvec.begin(); iter != constraintvec.end();) {
+						if (IsLineSame(*iter, i, k) || IsLineSame(*iter, j, k)) {
+							iter++;
+							continue;
+						}
+						else {
+							if (IsNeedReserve(i, j, k, *iter,2)) {
+								//保留
+								iter++;
+							}
+							else {
+								iter = constraintvec.erase(iter);
+							}
+						}
+					}//for for contraintvec
 				}
-			}
+				////////
+				//mode3:i
+				if (IsExist(i, j) && IsExist(i, k)) {
+					for (auto iter = constraintvec.begin(); iter != constraintvec.end();) {
+						if (IsLineSame(*iter, i, j) || IsLineSame(*iter, i, k)) {
+							iter++;
+							continue;
+						}
+						else {
+							if (IsNeedReserve(i, j, k, *iter, 3)) {
+								//保留
+								iter++;
+							}
+							else {
+								iter = constraintvec.erase(iter);
+							}
+						}
+					}//for for contraintvec
+				}
+				////////
+			}//for for k
 		}
 	}
 	cout << "\nSimplify Done";
@@ -179,6 +233,13 @@ XVec2 XLinearConstrainter::GetCirclePoint(float vangle) {
 	}
 	else if (constraintvec.size() == 3) {
 		//cout << "\n333line circlepoint";
+		XVec2 re(-99.0f, -99.0f);
+		if (LineIntersction(constraintvec[0], constraintvec[2], re)) {
+			return re;
+		}
+		else {
+			throw XError("\nERROR:At XLinearConstrainter::GetCirclePoint(),2line donnot have intersection");
+		}
 	}
 	else {
 		throw XError("\nERROR:At XLinearConstrainter::GetCirclePoint()");
@@ -205,6 +266,20 @@ float XLinearConstrainter::GetEXRou(float vmythetae) {
 	}
 	else if (constraintvec.size() == 2) {
 		return 0.0f;
+	}
+	else if (constraintvec.size() == 3) {
+		//???不精确
+		XVec2 t1(-99.0f, -99.0f);
+		if (LineIntersction(constraintvec[0], constraintvec[1], t1)) {}
+		else {
+			throw XError("\nERROR:At XLinearConstrainter::GetEXRou,line donnot have intersection");
+		}
+		XVec2 t2(-99.0f, -99.0f);
+		if (LineIntersction(constraintvec[0], constraintvec[2], t2)) {}
+		else {
+			throw XError("\nERROR:At XLinearConstrainter::GetEXRou,line donnot have intersection");
+		}
+		return (t2 - t1).GetLength();
 	}
 	else {
 		throw XError("\nERROR:At XLinearConstrainter::GetEXRou");
@@ -240,6 +315,32 @@ KVec3 XLinearConstrainter::GetForward(const XVec2& vcirclepoint) {
 		}
 		XVec2 tp4 = ttestl2.GetTypicalPoint(vcirclepoint, -10.0f);
 		if (IsSatisfy(constraintvec[0], constraintvec[1], tp4)) {
+			return KVec3(tp4 - vcirclepoint, 0.0f);
+		}
+		throw XError("\nERROR:At XLinearConstrainter::GetForwardVec,cannot get forward in size=2");
+	}
+	else if (constraintvec.size() == 3) {
+		XLine& l1ref = std::get<0>(constraintvec[0]);
+		XLine& l2ref = std::get<0>(constraintvec[2]);
+		float a1 = l1ref.a, b1 = l1ref.b, c1 = l1ref.c;
+		float a2 = l2ref.a, b2 = l2ref.b, c2 = l2ref.c;
+		float ld = sqrtf((a1*a1 + b1*b1) / (a2*a2 + b2*b2));
+		XLine ttestl1(a1 + ld*a2, b1 + ld*b2, c1 + ld*c2);
+		XVec2 tp1 = ttestl1.GetTypicalPoint(vcirclepoint, 10.0f);
+		if (IsSatisfy(constraintvec[0], constraintvec[2], tp1)) {
+			return KVec3(tp1 - vcirclepoint, 0.0f);
+		}
+		XVec2 tp2 = ttestl1.GetTypicalPoint(vcirclepoint, -10.0f);
+		if (IsSatisfy(constraintvec[0], constraintvec[2], tp2)) {
+			return KVec3(tp2 - vcirclepoint, 0.0f);
+		}
+		XLine ttestl2(a1 - ld*a2, b1 - ld*b2, c1 - ld*c2);
+		XVec2 tp3 = ttestl2.GetTypicalPoint(vcirclepoint, 10.0f);
+		if (IsSatisfy(constraintvec[0], constraintvec[2], tp3)) {
+			return KVec3(tp3 - vcirclepoint, 0.0f);
+		}
+		XVec2 tp4 = ttestl2.GetTypicalPoint(vcirclepoint, -10.0f);
+		if (IsSatisfy(constraintvec[0], constraintvec[2], tp4)) {
 			return KVec3(tp4 - vcirclepoint, 0.0f);
 		}
 		throw XError("\nERROR:At XLinearConstrainter::GetForwardVec,cannot get forward in size=2");

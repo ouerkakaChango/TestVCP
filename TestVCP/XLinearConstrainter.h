@@ -17,7 +17,10 @@ public:
 	bool IsExist(int i,int j);
 	bool IsLineSame(const XIDLine& vidline, int vid1,int vid2);
 	bool LineIntersction(const XIDLine& vline1, const XIDLine& vline2, XVec2& outpoint);
-	bool IsNeedReserve(int i, int j, int k, const XIDLine& vidline);
+	bool IsNeedReserve(int i, int j, int k, const XIDLine& vidline,int vmode=1);
+	//mode1:0-1,1-2
+	//mode2:0-2,1-2
+	//mode3:0-1.0-2
 	XIDLine GetLine(int i, int j);
 	XVec2 GetCirclePoint(float vangle=60.0f);
 	float GetAB(XVec2& outa,XVec2& outb);
