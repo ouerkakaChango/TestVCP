@@ -12,6 +12,7 @@ public:
 	vector<float> level_mytheta = MakeVec(-30.0f,0.0f, 30.0f);
 	vector<float> far_dis_lowbox_rate = MakeVec(1.05f, 2.16f, 3.27f);
 	vector<float> smallfull_dis_capsule_rate = MakeVec(1.14f, 1.43f, 2.14f);
+	vector<float> muti_smallfull_dis_capsule_rate= MakeVec(0.0f, 0.5f, 2.14f);//???
 	float surround_anglemax = 80.0f;
 
 	vector<float> GetFar_dis(string vcollisiontype,float vsize);

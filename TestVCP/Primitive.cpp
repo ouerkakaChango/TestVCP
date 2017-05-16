@@ -98,19 +98,40 @@ void Primitive2::_InitDis(XEntity* vcenterentity) {
 
 void Primitive2::_InitDis() {
 	string ttype = XENTITYMGR.Get(mainobjvec[0])->collisiontype;
-	if (distanceLOD == "Far") {
-		auto tdis = XDATABOX.GetFar_dis(ttype, size);
-		diss = tdis[0];
-		dise = tdis[1];
+	if (mainobjvec.size() == 1) {
+		if (distanceLOD == "Far") {
+			auto tdis = XDATABOX.GetFar_dis(ttype, size);
+			diss = tdis[0];
+			dise = tdis[1];
+		}
+		else if (distanceLOD == "SmallFull") {
+			auto tdis = XDATABOX.GetSmallFull_dis(ttype, size);
+			diss = tdis[0];
+			dise = tdis[1];
+			perfectrou = size*XDATABOX.smallfull_dis_capsule_rate[1];
+		}
+		else {
+			throw XError("ERROR:distanceLOD error at Primitive2::_InitDis,is:" + distanceLOD);
+		}
 	}
-	else if (distanceLOD == "SmallFull") {
-		auto tdis = XDATABOX.GetSmallFull_dis(ttype, size);
-		diss = tdis[0];
-		dise = tdis[1];
-		perfectrou = size*XDATABOX.smallfull_dis_capsule_rate[1];
-	}
-	else {
-		throw XError("ERROR:distanceLOD error at Primitive2::_InitDis,is:" + distanceLOD);
+	else if (mainobjvec.size() > 1) {
+		if (distanceLOD == "Far") {
+			auto tdis = XDATABOX.GetFar_dis(ttype, size);
+			diss = tdis[0];
+			dise = tdis[1];
+		}
+		else if (distanceLOD == "SmallFull") {
+			//???disseÎ´¸Ä£¬¸ÄÁËperfecttou
+			auto tdis = XDATABOX.GetSmallFull_dis(ttype, size);
+			diss = tdis[0];
+			dise = tdis[1];
+			perfectrou = size*XDATABOX.muti_smallfull_dis_capsule_rate[1];
+			//cout << "\n^^^" << XDATABOX.muti_smallfull_dis_capsule_rate[1];
+			//perfectrou = size / 2.0f;
+		}
+		else {
+			throw XError("ERROR:distanceLOD error at Primitive2::_InitDis,is:" + distanceLOD);
+		}
 	}
 }
 
