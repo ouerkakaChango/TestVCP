@@ -9,6 +9,10 @@ int main()
 	XEntity e_ground("Ground", "StaticMesh", KVec3(0, 0, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
 	XEntity e_ground2("Ground2", "StaticMesh", KVec3(0, -1500, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
 	XEntity e_ground3("Ground3", "StaticMesh", KVec3(0, 1500, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
+	XEntity e_ground4("Ground4", "StaticMesh", KVec3(1800, 0, 20), "Low_Box", MakeVec(1000.0f, 1000.0f, 50.0f));
+
+	//???
+	//XEntity e_track("Track1", "StaticMesh", KVec3(1000, 50, 20), "Low_Box", MakeVec(100.0f, 10000.0f, 100.0f));
 
 	XEntity e_cha1("Cha1", "Character", KVec3(200, 200, 130), "Capsule", MakeVec(30.0f, 40.0f));
 	e_cha1.extroinfovec.push_back(KVec3(-1.0f,0.0f,0.0f));
@@ -26,6 +30,10 @@ int main()
 
 	XEntity e_box1("BlockBox1", "StaticMesh", KVec3(0, -1250, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
 	XEntity e_box2("BlockBox2", "StaticMesh", KVec3(0, 1000, 3000), "Low_Box", MakeVec(200.0f, 200.0f, 200.0f));
+
+	XEntity e_movecube1("MoveCube1", "MoveableMesh", KVec3(1000, 2500, 120), "Low_Box", MakeVec(100.0f, 100.0f, 100.0f));
+	e_movecube1.InitMotionFile("D:/test/e_movecube1.txt");
+
 	vector<Primitive2> shotvec;
 	shotvec.push_back(Primitive2());
 	shotvec[0].shotid = 1;
@@ -101,6 +109,18 @@ int main()
 	shotvec[4].ToPrimitive0();
 	shotvec[4].ToJson();
 	//shotvec[4].Print();
+
+	shotvec.push_back(Primitive2());
+	shotvec[5].shotid = 5;
+	shotvec[5].shotmethod = "StaticFollow";
+	shotvec[5].mainobjvec.push_back("MoveCube1");
+	shotvec[5].shottime = 4.0f;
+	shotvec[5].exvec.push_back(KVec3(1800, 0, 20));
+	shotvec[5].Init();
+	shotvec[5].ToPrimitive0();
+	shotvec[5].ToJson();
+	//shotvec[5].Print();
+	
 	
 	
 	ofstream fo("D:/TestVCPJson.txt", ios::trunc);

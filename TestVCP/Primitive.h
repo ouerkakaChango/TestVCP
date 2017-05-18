@@ -55,6 +55,8 @@ public:
 	vector<vector<KVec3>> dotcloudvec;
 	vector<vector<KVec3>> candidatepathvec;
 	vector<KVec3> pathvec;
+	vector<KVec3> exvec;
+	vector<KVec3> rotvec;
 
 	vector<Primitive0> prim0vec;
 	vector<Primitive1> prim1vec;

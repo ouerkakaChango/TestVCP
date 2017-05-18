@@ -1,6 +1,10 @@
 #include "XEntity.h"
 #include "XError.h"
 #include <cmath>
+#include <fstream>
+#include "json/json.h"
+
+#pragma comment(lib, "jsoncpp_d86.lib")
 
 XEntity::XEntity(string vname, string vtype, KVec3 vcenterpoint, string vcollisiontype, vector<float> vcollisioninfo) :name(vname), type(vtype), centerpoint(vcenterpoint), collisiontype(vcollisiontype)
 , collisioninfo(vcollisioninfo) {
@@ -16,6 +20,36 @@ XEntity::XEntity(string vname, string vtype, KVec3 vcenterpoint, string vcollisi
 		throw XError("\n!!!ERROR:CollisionTypeError:" + vcollisiontype);
 	}
 	XENTITYMGR.entityvec.push_back(this);
+}
+
+void XEntity::InitMotionFile(string vfile) {
+	motionfile = vfile;
+	Json::Reader reader;
+	Json::Value root;
+
+	//从文件中读取
+	std::ifstream is;
+	is.open(vfile);
+	if (!is.is_open()) { throw XError("\nERROR:file open error,is"+ vfile); }
+	if (reader.parse(is, root))
+	{
+		for (unsigned int i = 0; i < root.size(); i++) {
+			float px = (float)root[i]["pos"]["x"].asDouble();
+			float py = (float)root[i]["pos"]["y"].asDouble();
+			float pz = (float)root[i]["pos"]["z"].asDouble();
+			float rx = (float)root[i]["rot"]["x"].asDouble();
+			float ry = (float)root[i]["rot"]["y"].asDouble();
+			float rz = (float)root[i]["rot"]["z"].asDouble();
+			XMotion t=std::make_tuple(KVec3(px,py,pz),KVec3(rx,ry,rz));
+			motionvec.push_back(t);
+		}
+	}
+	else {
+		is.close();
+		throw XError("\nERROR:json parse error,is" + vfile);
+	}
+	is.close();
+
 }
 
 XEntityManager& XEntityManager::GetInstance() {

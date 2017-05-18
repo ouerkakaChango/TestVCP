@@ -375,6 +375,12 @@ void Primitive2::Init() {
 
 				}//else for 如果不存在 perfect
 			}//如果是cut
+			else if (shotmethod == "StaticFollow") {
+				shotpos = exvec[0];
+				for (unsigned int i = 0; i < pobj->motionvec.size(); i++) {
+					rotvec.push_back(GetRotToPoint(shotpos, std::get<0>(pobj->motionvec[i])));
+				}
+			}
 			else {
 				throw XError("ERROR:shotmethod error at init,is:" + shotmethod);
 			}
@@ -536,11 +542,11 @@ void Primitive2::PrintPath(){
 }
 
 void Primitive2::ToPrimitive0() {
+	int frames = (int)XDATABOX.nowtime * XDATABOX.framesize;
+	int framee = frames + (int)shottime*XDATABOX.framesize;
+	frames += 1;
+	XDATABOX.nowtime += shottime;
 	if (shotmethod == "Surround") {
-		int frames = (int)XDATABOX.nowtime*XDATABOX.framesize;
-		int framee = frames + (int)shottime*XDATABOX.framesize;
-		frames += 1;
-		XDATABOX.nowtime += shottime;
 		int numofseg = 360 / segsize;//12
 		float tdeltaframe = static_cast<float>(framee - frames) / numofseg;
 		int tcount = 0;
@@ -555,14 +561,13 @@ void Primitive2::ToPrimitive0() {
 		}
 	}
 	else if (shotmethod == "Cut") {
-		int frames= (int)XDATABOX.nowtime * XDATABOX.framesize;
-		int framee= frames + (int)shottime*XDATABOX.framesize;
-		frames += 1;
-		XDATABOX.nowtime += shottime;
-		//cout << "\n nowtimes:" << XDATABOX.nowtime<<"\n";
-		//cout << "\n framee:" << framee;
 		for (int id = frames; id <= framee; id++) {
 			prim0vec.push_back(Primitive0(id, shotpos, shotrot));
+		}
+	}
+	else if (shotmethod == "StaticFollow") {
+		for (int id = frames; id <= framee; id++) {
+			prim0vec.push_back(Primitive0(id, shotpos, rotvec[id-frames]));
 		}
 	}
 	else {
@@ -635,29 +640,25 @@ KVec3 Primitive2::GetRotToPoint(KVec3 vpos, KVec3 vpoint) {
 	x<0, y>0 : -180 + atan(y / x)
 	x>0, y>0:-360 + atan(y / x)
 	*/
-	if (x < 0.0f&&y >= 0.0f) {
-		yaw =ArcToDegree( atanf(y / x));
-		//cout << "\ny1";
-	}
-	else if (x>0.0f&&y >= 0.0f) {
-		yaw = -90.0f - ArcToDegree(atanf(y / x));
-		//cout << "\ny2";
-	}
-	else if (x>0.0f&&y<0.0f) {
-		yaw = -180.0f + ArcToDegree(atanf(y / x));
-		//cout << "\ny3";
-	}
-	else if (x < 0.0f&&y < 0.0f) {
-		yaw = -360.0f + ArcToDegree(atanf(y / x));
-		//cout << "\ny4";
-	}
-	else if (NearlyEqualf(x,0.0f)) {
+	if (NearlyEqualf(x, 0.0f)) {
 		if (y >= 0.0f) {
 			yaw = -90.0f;
 		}
 		else {
 			yaw = -270.0f;
 		}
+	}
+	else if (x < 0.0f&&y >= 0.0f) {
+		yaw =ArcToDegree( atanf(y / x));
+		//cout << "\ny1";
+	}
+	else if (x>0.0f) {
+		yaw = -180.0f + ArcToDegree(atanf(y / x));
+		//cout << "\ny2";
+	}
+	else if (x < 0.0f&&y < 0.0f) {
+		yaw = -360.0f + ArcToDegree(atanf(y / x));
+		//cout << "\ny4";
 	}
 	return KVec3(-90.0f + ArcToDegree(acosf(z / sqrtf(x*x + y*y + z*z))), yaw, 0.0f);
 }
@@ -680,7 +681,7 @@ void Primitive2::ToJson(bool removeheadtail) {
 		//jsonstrvec[jsonstrvec.size() - 1].erase(jsonstrvec[jsonstrvec.size() - 1].end() - 1);
 		if (!removeheadtail) { jsonstrvec.push_back("]"); }
 	}
-	else if (shotmethod == "Cut") {
+	else if (shotmethod == "Cut"||shotmethod=="StaticFollow") {
 		for (auto& i : prim0vec) {
 			jsonstrvec.push_back(i.ToJson());
 		}
