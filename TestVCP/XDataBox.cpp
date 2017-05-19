@@ -19,6 +19,9 @@ vector<float> XDataBox::GetDepression_angle(string vshotmethod) {
 	if (vshotmethod == "Surround") {
 		return MakeVec(depression_angle[0],surround_anglemax);
 	}
+	else if (vshotmethod == "MoveFollow") {
+		return MakeVec(depression_angle[0], depression_angle[1]);
+	}
 	else {
 		throw XError("!!!Error:ShotMethodError At GetDepression_angle,ShotMethod:" + vshotmethod);
 		return vector<float>();
@@ -55,23 +58,13 @@ vector<float> XDataBox::GetLevel_mytheta(string vshotmethod) {
 	}
 }
 
-float XDataBox::GetLevel_perfectmyfai(string vshotmethod) {
-	if (vshotmethod == "Cut") {
-		return level_myfai[1];
+float XDataBox::GetDepression_perfectdeltapitch(string vshotmethod) {
+	//???
+	if (vshotmethod == "MoveFollow") {
+		return 60.0f;
 	}
 	else {
-		throw XError("!!!Error:ShotMethodError At GetLevel_perfectmyfai,ShotMethod:" + vshotmethod);
-		return -1.0f;
-	}
-}
-
-float XDataBox::GetLevel_perfectmytheta(string vshotmethod) {
-	if (vshotmethod == "Cut") {
-		return level_mytheta[1];
-	}
-	else {
-		throw XError("!!!Error:ShotMethodError At GetLevel_perfectmytheta,ShotMethod:" + vshotmethod);
-		return -1.0f;
+		return 0.0f;
 	}
 }
 

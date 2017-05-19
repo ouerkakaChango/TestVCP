@@ -48,7 +48,7 @@ public:
 	float shottime;
 
 	float diss, dise, myfais, myfaie,mythetas,mythetae;
-	float perfectfai, perfecttheta, perfectrou;
+	float perfectdeltapitch = 0.0f , perfecttheta, perfectrou;
 	float size;
 	KVec3 shotpos=KVec3(-999, -999, -999), shotrot=KVec3(-999, -999, -999);
 	int segsize = -1;
@@ -57,6 +57,7 @@ public:
 	vector<KVec3> pathvec;
 	vector<KVec3> exvec;
 	vector<KVec3> rotvec;
+	vector<KVec3> posvec;
 
 	vector<Primitive0> prim0vec;
 	vector<Primitive1> prim1vec;
@@ -80,7 +81,7 @@ public:
 	void SetPosRotInDotCloud();
 
 	bool _IsExistAndSetPerfect1(XEntity* vobj);
-	bool _IsExistAndSetPerfect2(KVec3 vpoint, KVec3 vforwardvec);
+	bool _IsExistAndSetPerfect2(KVec3 vpoint, KVec3 vforwardvec,string vname="null");
 };
 #endif
 

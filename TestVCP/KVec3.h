@@ -4,7 +4,7 @@
 class KVec3 {
 public:
 	float x, y, z;
-	KVec3(float vx, float vy, float vz) :x(vx), y(vy), z(vz) {}
+	KVec3(float vx, float vy, float vz);
 	KVec3(XVec2 v2, float vz) :x(v2.x), y(v2.y), z(vz) {}
 	void SetNormal();
 	float GetLength();
@@ -22,5 +22,6 @@ public:
 	bool NearlyEqual(KVec3 v);
 	bool NearlyZero();
 	void Print();
+	void RotatePitch(float vpitch);
 };
 #endif

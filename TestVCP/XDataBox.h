@@ -12,6 +12,7 @@ public:
 	vector<float> level_mytheta = MakeVec(-30.0f,0.0f, 30.0f);
 	vector<float> far_dis_lowbox_rate = MakeVec(1.05f, 2.16f, 3.27f);
 	vector<float> smallfull_dis_capsule_rate = MakeVec(1.14f, 1.43f, 2.14f);
+	vector<float> full_dis_rate = MakeVec(0.0f, 5.7f, 10.0f);//???
 	vector<float> muti_smallfull_dis_capsule_rate= MakeVec(0.0f, 0.5f, 2.14f);//???
 	float surround_anglemax = 80.0f;
 
@@ -20,8 +21,8 @@ public:
 	vector<float> GetSmallFull_dis(string vcollisiontype, float vsize);
 	vector<float> GetLevel_myfai(string vshotmethod);
 	vector<float> GetLevel_mytheta(string vshotmethod);
-	float GetLevel_perfectmyfai(string vshotmethod);
-	float GetLevel_perfectmytheta(string vshotmethod);
+
+	float GetDepression_perfectdeltapitch(string vshotmethod);
 };
 #define XDATABOX XDataBox::GetInstance()
 #endif

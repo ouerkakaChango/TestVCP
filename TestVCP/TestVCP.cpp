@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Primitive.h"
 #include "XEntity.h"
+#include "XMath.h"
 #include <fstream>
 using namespace std;
 
@@ -34,6 +35,10 @@ int main()
 	XEntity e_movecube1("MoveCube1", "MoveableMesh", KVec3(1000, 2500, 120), "Low_Box", MakeVec(100.0f, 100.0f, 100.0f));
 	e_movecube1.InitMotionFile("D:/test/e_movecube1.txt");
 
+	XEntity e_movecube2("MoveCube2", "MoveableMesh", KVec3(3200, -2800, 70), "Low_Box", MakeVec(100.0f, 100.0f, 100.0f));
+	e_movecube2.InitMotionFile("D:/test/e_movecube2.txt");
+	e_movecube2.extroinfovec.push_back(KVec3(1.0f, 0.0f, 0.0f));
+	
 	vector<Primitive2> shotvec;
 	shotvec.push_back(Primitive2());
 	shotvec[0].shotid = 1;
@@ -111,15 +116,29 @@ int main()
 	//shotvec[4].Print();
 
 	shotvec.push_back(Primitive2());
-	shotvec[5].shotid = 5;
+	shotvec[5].shotid = 6;
 	shotvec[5].shotmethod = "StaticFollow";
 	shotvec[5].mainobjvec.push_back("MoveCube1");
 	shotvec[5].shottime = 4.0f;
-	shotvec[5].exvec.push_back(KVec3(1800, 0, 20));
+	shotvec[5].exvec.push_back(KVec3(1800, 0, 130));
 	shotvec[5].Init();
 	shotvec[5].ToPrimitive0();
 	shotvec[5].ToJson();
 	//shotvec[5].Print();
+
+	
+	shotvec.push_back(Primitive2());
+	shotvec[6].shotid = 7;
+	shotvec[6].distanceLOD = "Full";
+	shotvec[6].angleLOD = "Depression";
+	shotvec[6].shotmethod = "MoveFollow";
+	shotvec[6].mainobjvec.push_back("MoveCube2");
+	shotvec[6].shottime = 4.0f;
+	shotvec[6].Init();
+	shotvec[6].ToPrimitive0();
+	shotvec[6].ToJson();
+	//shotvec[6].Print();
+	
 	
 	
 	
@@ -137,6 +156,7 @@ int main()
 			iter->AddToFile("D:/TestVCPJson.txt");
 		}
 	}
+	
 	
 	/*
 	Primitive1 p1;

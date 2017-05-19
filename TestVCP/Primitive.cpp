@@ -84,12 +84,20 @@ void Primitive2::_InitDis(XEntity* vcenterentity) {
 		auto tdis = XDATABOX.GetFar_dis(vcenterentity->collisiontype, vcenterentity->size);
 		diss = tdis[0];
 		dise = tdis[1];
+		//???
 	}
 	else if (distanceLOD == "SmallFull") {
 		auto tdis = XDATABOX.GetSmallFull_dis(vcenterentity->collisiontype, vcenterentity->size);
 		diss = tdis[0];
 		dise = tdis[1];
 		perfectrou = vcenterentity->size*XDATABOX.smallfull_dis_capsule_rate[1];
+	}
+	else if (distanceLOD == "Full") {
+		//???
+		//auto tdis = XDATABOX.GetFull_dis(vcenterentity->collisiontype, vcenterentity->size);
+		//diss = tdis[0];
+		//dise = tdis[1];
+		perfectrou = vcenterentity->size*XDATABOX.full_dis_rate[1];
 	}
 	else {
 		throw XError("ERROR:distanceLOD error at Primitive2::_InitDis,is:" + distanceLOD);
@@ -139,7 +147,8 @@ void Primitive2::_InitRot() {
 	if (angleLOD == "Depression") {
 		auto tmyfai = XDATABOX.GetDepression_angle(shotmethod);
 		myfais = tmyfai[0];
-		myfaie = tmyfai[1];
+		myfaie = tmyfai[1];	
+		perfectdeltapitch = XDATABOX.GetDepression_perfectdeltapitch(shotmethod);
 	}
 	else if (angleLOD == "Level") {
 		auto tmyfai = XDATABOX.GetLevel_myfai(shotmethod);
@@ -174,18 +183,24 @@ bool Primitive2::_IsExistAndSetPerfect1(XEntity* vobj) {
 	}
 }
 
-bool Primitive2::_IsExistAndSetPerfect2(KVec3 vpoint,KVec3 vforwardvec) {
+bool Primitive2::_IsExistAndSetPerfect2(KVec3 vpoint,KVec3 vforwardvec,string vname) {
 	//???
-	KVec3 tperfectpoint = vpoint + vforwardvec*perfectrou;
+	KVec3 tf = vforwardvec;
+	tf.RotatePitch(perfectdeltapitch);
+	//cout << "\n***" << perfectrou;
+	//XPRINT(vpoint);
+	KVec3 tperfectpoint = vpoint + tf*perfectrou;
 	//cout << "\nperfectrou:" << perfectrou;
 	//XPRINT(vforwardvec);
 	//XPRINT(tperfectpoint);
-	if (!XENTITYMGR.IsPointInBlock(tperfectpoint) && !XENTITYMGR.IsLineBeBlocked(tperfectpoint.x, tperfectpoint.y, tperfectpoint.z, centerpoint.x, centerpoint.y, centerpoint.z, "null")) {
+	if (!XENTITYMGR.IsPointInBlock(tperfectpoint) && !XENTITYMGR.IsLineBeBlocked(tperfectpoint.x, tperfectpoint.y, tperfectpoint.z, centerpoint.x, centerpoint.y, centerpoint.z, vname)) {
 		shotpos = tperfectpoint;
 		shotrot = GetRotToPoint(tperfectpoint,vpoint);
-		cout << "\nPerfectPos:"; shotpos.Print();
-		XPRINT(vpoint);
-		cout << "\nPerfectRot:"; shotrot.Print();
+		//cout << "\nPerfectPos:"; shotpos.Print();
+		//XPRINT(vpoint);
+		//XPRINT(vforwardvec);
+		//XPRINT(tf);
+		//cout << "\nPerfectRot:"; shotrot.Print();
 		return true;
 	}
 	else {
@@ -381,6 +396,21 @@ void Primitive2::Init() {
 					rotvec.push_back(GetRotToPoint(shotpos, std::get<0>(pobj->motionvec[i])));
 				}
 			}
+			else if (shotmethod == "MoveFollow") {
+				KVec3 tforward = pobj->extroinfovec[0];
+				_InitDis(pobj);
+				_InitRot();
+				for (unsigned int i = 0; i < pobj->motionvec.size(); i++) {
+					if (_IsExistAndSetPerfect2(std::get<0>(pobj->motionvec[i]),tforward,pobj->name)) {
+						posvec.push_back(shotpos);
+					}
+					else {
+						throw;
+						//???
+					}
+					rotvec.push_back(GetRotToPoint(shotpos, std::get<0>(pobj->motionvec[i])));
+				}
+			}
 			else {
 				throw XError("ERROR:shotmethod error at init,is:" + shotmethod);
 			}
@@ -570,6 +600,11 @@ void Primitive2::ToPrimitive0() {
 			prim0vec.push_back(Primitive0(id, shotpos, rotvec[id-frames]));
 		}
 	}
+	else if (shotmethod == "MoveFollow") {
+		for (int id = frames; id <= framee; id++) {
+			prim0vec.push_back(Primitive0(id, posvec[id - frames], rotvec[id - frames]));
+		}
+	}
 	else {
 		throw XError("ERROR:ShotMethodError At P2ToP0,ShotMethod:"+shotmethod);
 	}
@@ -681,7 +716,7 @@ void Primitive2::ToJson(bool removeheadtail) {
 		//jsonstrvec[jsonstrvec.size() - 1].erase(jsonstrvec[jsonstrvec.size() - 1].end() - 1);
 		if (!removeheadtail) { jsonstrvec.push_back("]"); }
 	}
-	else if (shotmethod == "Cut"||shotmethod=="StaticFollow") {
+	else if (shotmethod == "Cut"||shotmethod=="StaticFollow" || shotmethod == "MoveFollow") {
 		for (auto& i : prim0vec) {
 			jsonstrvec.push_back(i.ToJson());
 		}

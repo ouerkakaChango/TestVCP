@@ -19,9 +19,26 @@ KVec3 SCToCCoordinate(float fai, float theta, float rou) {
 
 KVec3 CCToSCoordinate(float x, float y, float z) {
 	float fai = -1.0f, theta = -1.0f, rou = -1.0f;
-	fai = ArcToDegree(atanf(x / y));
+	//theta = ArcToDegree(atanf(x / y));
+	if (NearlyEqualf(y,0.0f)) {
+		if (x>0) {
+			theta = 90.0f;
+		}
+		else {
+			theta = 270.0f;
+		}
+	}
+	if (y>0 && x>0) {
+		theta = ArcToDegree(atanf(x / y));
+	}
+	else if (y<0) {
+		theta = 180.0f + ArcToDegree(atanf(x / y));
+	}
+	else if (y>0 && x <= 0) {
+		theta = 360.0f + ArcToDegree(atanf(x / y));
+	}
 	rou = sqrtf(x*x + y*y + z*z);
-	theta = ArcToDegree(acosf(z / rou));
+	fai = ArcToDegree(acosf(z / rou));
 	return KVec3(fai, theta, rou);
 }
 

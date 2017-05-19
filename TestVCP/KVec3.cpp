@@ -4,6 +4,18 @@
 #include "XError.h"
 #include <math.h>
 
+KVec3::KVec3(float vx, float vy, float vz) :x(vx), y(vy), z(vz) {
+	if (NearlyEqualf(x, 0.0f)) {
+		x = 0.0f;
+	}
+	if (NearlyEqualf(y, 0.0f)) {
+		y = 0.0f;
+	}
+	if (NearlyEqualf(z, 0.0f)) {
+		z = 0.0f;
+	}
+}
+
 void KVec3::SetNormal() {
 	float length = GetLength();
 	x /= length;
@@ -92,4 +104,12 @@ float KVec3::GetAngleBetween(KVec3 vn) {
 
 void KVec3::Print() {
 	cout << "vec3:" << x << " " << y << " " << z << "\n";
+}
+
+void KVec3::RotatePitch(float vpitch) {
+		KVec3 tsc = CCToSCoordinate(x,y,z);
+		tsc.x -= vpitch;
+		//cout << "\n***" << vpitch;
+		tsc= SCToCCoordinate(tsc.x, tsc.y, tsc.z);
+		x = tsc.x; y = tsc.y; z = tsc.z;
 }
